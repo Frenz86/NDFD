@@ -58,32 +58,40 @@ folium_static(m)
 lat_long = st.text_input('Insert Lat & Long in the format (Lat,Long):')
 
 if lat_long != '': 
-  latitude = float(lat_long.split(',')[0])
-  longitude = float(lat_long.split(',')[1])
+    latitude = float(lat_long.split(',')[0])
+    longitude = float(lat_long.split(',')[1])
 
 if st.button('Analyse Lat & Long'): # this is if you want to add a button to launch the analysis (without this, it does automatically when there's lat & long values in the cell)
+	p = Point(longitude,latitude)
+	st.header('Extracting Results for the location:\n(Lat: ' + str(latitude) +' & Long: ' + str(longitude) + ')')
+	# ======= Get Value from Shapefile
+	landslide_code = 'No Landslide'
+	# From a given Point coordinates, quickly/efficiently check if it's contained in any polygons geometry, and print out the LANDSLIDE code of that polygon if so. 
+	# this works, but is this teh most efficient way?!? Think it can be improved with lampda / apply / map, without iterating on the whole dataframe?
+	for elem in landslide_shp.loc[:,'geometry']:
+		if p.within(elem): 
+			landslide_code = landslide_shp.loc[landslide_shp.loc[:,'geometry'] == elem]['LANDSLIDES'].values[0]
+	st.text('The point is contained in the polygon: '+ landslide_code)
 
-  p = Point(longitude,latitude)
+	# ======= Get Value from Raster
 
-  st.header('Extracting Results for the location:\n(Lat: ' + str(latitude) +' & Long: ' + str(longitude) + ')')
 
-  # ======= Get Value from Shapefile
-  landslide_code = 'No Landslide'
+	# From a given Point coordinates, quickly/efficiently check if it's contained in any polygons geometry, and print out the LANDSLIDE code of that polygon if so. 
+	# this works, but is this teh most efficient way?!? Think it can be improved with lampda / apply / map, without iterating on the whole dataframe?
+	frisk_code = 'NAN'
+	new_risk = 'NAN'
+	for elem in flood_shp.loc[:,'geometry']:
+		if p.within(elem): 
+			frisk_code = flood_shp.loc[flood_shp.loc[:,'geometry'] == elem]['FloodRisk'].values[0]
+			new_risk = frisk_code-1
+			print(new_risk)
+		if new_risk == 0:
+			new_risk = 'No Risk'
+	
 
-  # From a given Point coordinates, quickly/efficiently check if it's contained in any polygons geometry, and print out the LANDSLIDE code of that polygon if so. 
-  # this works, but is this teh most efficient way?!? Think it can be improved with lampda / apply / map, without iterating on the whole dataframe?
-  for elem in landslide_shp.loc[:,'geometry']:
-    if p.within(elem): 
-      landslide_code = landslide_shp.loc[landslide_shp.loc[:,'geometry'] == elem]['LANDSLIDES'].values[0]
-  st.text('The point is contained in the polygon: '+ landslide_code)
+	## TEST
+	## flood risk ==3 #15.2533,-61.3164
+	## flood risk ==4 #15.3393,-61.2603
+	## flood risk ==0 #15.3451,-61.3588
 
-  # ======= Get Value from Raster
-  frisk_code = 'NAN'
-
-  # From a given Point coordinates, quickly/efficiently check if it's contained in any polygons geometry, and print out the LANDSLIDE code of that polygon if so. 
-  # this works, but is this teh most efficient way?!? Think it can be improved with lampda / apply / map, without iterating on the whole dataframe?
-  for elem in flood_shp.loc[:,'geometry']:
-    if p.within(elem): 
-      frisk_code = flood_shp.loc[flood_shp.loc[:,'geometry'] == elem]['FloodRisk'].values[0]
-
-  st.text('Flood risk category: ' + str(frisk_code))
+	st.text('Flood risk: ' + str(new_risk))
