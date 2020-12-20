@@ -86,12 +86,12 @@ def main():
 			if new_risk == 0:
 				new_risk = 'No Risk'
 		
-		## TEST
+		## TEST ##
 		## flood risk ==3 #15.2533,-61.3164
 		## flood risk ==4 #15.3393,-61.2603
 		## flood risk ==0 #15.3451,-61.3588
-		##LandslideNO + flood risk ==0 ## 15.3955,-61.2482
-		##LandslideNO + flood risk ==0 ## 15.3955,-61.2482
+		## LandslideNO + flood risk ==0 ## 15.3955,-61.2482
+		## LandslideNO + flood risk ==0 ## 15.3955,-61.2482
 
 		st.markdown('**-Flood risk: **' + str(new_risk))
 		url1 = 'tablerisk.png'
