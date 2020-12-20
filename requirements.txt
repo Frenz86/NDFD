@@ -1,4 +1,4 @@
-streamlit
+streamlit ==0.72
 numpy
 pandas
 streamlit-folium
