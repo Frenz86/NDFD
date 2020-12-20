@@ -95,3 +95,6 @@ if st.button('Analyse Lat & Long'): # this is if you want to add a button to lau
 	## flood risk ==0 #15.3451,-61.3588
 
 	st.text('Flood risk: ' + str(new_risk))
+
+	 ### Solution? 
+	 #https://stackoverflow.com/questions/24417843/leaflet-get-latitude-and-longitude-of-a-marker-inside-a-pop-up
