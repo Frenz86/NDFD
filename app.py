@@ -18,7 +18,7 @@ def main():
 	st.button("Re-run")
 	# set up layout
 	st.title("Dominica GEO-Risk Evaluation")
-	pag_name = ["Risk Classification","Coordinate conversion to WGS84/UTMzone19N"]
+	pag_name = ["Risk Classification","Coordinate conversion to WGS84/UTM ZONE 19 EPSG 32619"]
 	
 	OPTIONS = pag_name
 	#sim_selection = st.radio('Select the option', OPTIONS)
@@ -30,7 +30,7 @@ def main():
 		pag2()
 	else:
 		st.markdown("Something went wrong. We are looking into it.")
-
+	
 
 if __name__ == "__main__":
 	main()

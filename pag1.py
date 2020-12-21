@@ -37,7 +37,7 @@ from io import BytesIO
 def to_excel(df):
 	output = BytesIO()
 	writer = pd.ExcelWriter(output, engine='xlsxwriter')
-	df.to_excel(writer, index=False, sheet_name='Sheet1') # <--- here
+	df.to_excel(writer, index=True, sheet_name='Sheet1') # <--- here
 	writer.save()
 	processed_data = output.getvalue()
 	return processed_data
@@ -57,8 +57,10 @@ def get_table_download_link(df):
 ##############################################################################################
 
 # Landslide Risk (Vectorised)
-landslide_shp = gpd.read_file('Flood_and_Landslide_Datasets/landslides_1_4326.shp')
-landslide_json = 'Flood_and_Landslide_Datasets/landslides_1_4326.geojson'
+# landslide_shp = gpd.read_file('Flood_and_Landslide_Datasets/landslides_1_4326.shp')
+# landslide_json = 'Flood_and_Landslide_Datasets/landslides_1_4326.geojson'
+landslide_shp = gpd.read_file('Flood_and_Landslide_Datasets/geonode_class3_elev.shp')
+landslide_json = 'Flood_and_Landslide_Datasets/geonode_class3_elev.geojson'
 
 # Flood Risk (Vectorised)
 flood_shp = gpd.read_file('Flood_and_Landslide_Datasets/geonode_flood_hazard_map_vector.shp')
@@ -66,15 +68,11 @@ flood_gj = geojson.load(open('Flood_and_Landslide_Datasets/geonode_flood_hazard_
 
 ##DF
 #df = pd.DataFrame(np.random.randint(0,100,size=(100, 4)), columns=list('ABCD'))
-rows_list = []
-for row in input_rows:
-	dict1 = {}
-	# get input row in dictionary format
-	# key = col_name
-	dict1.update(blah..) 
-	rows_list.append(dict1)
-
-df = pd.DataFrame(rows_list)  
+import datetime
+todays_date = datetime.datetime.now().date()
+index = pd.date_range(todays_date-datetime.timedelta(1), periods=1, freq='h')
+columns=['latitude','longitude','Risk_Landslide','Risk_Flood']
+df = pd.DataFrame(index=index, columns=columns)
 
 
 
@@ -113,7 +111,7 @@ def main():
 	folium_static(m)
 	#-------------------
 # Text labels to enter the lat & long coordinates once you read them on the map
-	lat_long = st.text_input('Insert Latitude and Longitude in the format WGS84/UTMzone19N (DD.dddd) for example: 15.2533,-61.3164')
+	lat_long = st.text_input('Insert Latitude,Longitude in the format WGS84 UTM ZONE 19 EPSG 32619 (DD.dddd) for example: 15.2533,-61.3164')
 	if lat_long != '': 
 		latitude = float(lat_long.split(',')[0])
 		longitude = float(lat_long.split(',')[1])
