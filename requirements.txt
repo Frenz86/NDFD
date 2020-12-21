@@ -7,4 +7,5 @@ geopandas
 matplotlib
 Shapely
 branca
+pyshp
 geojson == 2.5.0
