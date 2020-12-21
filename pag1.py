@@ -102,7 +102,6 @@ def main():
 
 	if st.button('Analyse Lat & Long'): # this is if you want to add a button to launch the analysis (without this, it does automatically when there's lat & long values in the cell)
 		st.header('Extracting Results for the location selected:\n(Lat: ' + str(latitude) +' & Long: ' + str(longitude) + ')')
-		# ======= Get Value from Shapefile
 		#coordinate = shapely.geometry.Point((-61.346482,15.393996,)) # outside
 		#coordinate = shapely.geometry.Point((-61.419855,15.396184,)) # 1771
 		coordinate = shapely.geometry.Point((longitude,latitude,))
@@ -120,7 +119,7 @@ def main():
 				st.write('wait for Flood Risk Analysis... ')
 				break
 		else:
-			landslide_code = 'Outside Landslide Zone'
+			landslide_code = 'Outside Risk Zone'
 			print(landslide_code)
 			st.markdown('**-Landslide Risk: **'+ str(landslide_code))
 		
@@ -138,31 +137,27 @@ def main():
 					print(new_risk)
 					url1 = 'tablerisk.png'
 					image1 = Image.open(url1)
-					st.image(image1, caption='',use_column_width=True)
-					#lst_dict = []
-					lst_dict.append({'c1':latitude, 'c2':longitude, 'c3': 1,'c4':1})
-					df=df.append(lst_dict)
 
-				else:
+					#st.markdown(get_table_download_link(df), unsafe_allow_html=True)
+					st.image(image1, caption='',use_column_width=True)
+				elif new_risk != 0:
 					st.markdown('**-Flood risk: **' + str(new_risk))
 					print(new_risk)
 					url1 = 'tablerisk.png'
 					image1 = Image.open(url1)
+
+					#st.markdown(get_table_download_link(df), unsafe_allow_html=True)
 					st.image(image1, caption='',use_column_width=True)
+					#break 
+				else:
+					new_risk = 'Outside Flood Risk Zone'
+					print(new_risk)
+					st.markdown('**-Flood risk: **' + str(new_risk))
+					#lst_dict = []
 					lst_dict.append({'c1':latitude, 'c2':longitude, 'c3': 1,'c4':1})
 					df=df.append(lst_dict)
-					# from pag2 import save
-					# save(4,4,6,7)
 					break
-
-		else:
-			new_risk = 'Outside Flood Risk Zone'
-			print(new_risk)
-			st.markdown('**-Flood risk: **' + str(new_risk))
-			#lst_dict = []
-			lst_dict.append({'c1':latitude, 'c2':longitude, 'c3': 1,'c4':1})
-			df=df.append(lst_dict)
-	print(df)	
+	# print(df)	
 
 	## TEST ##
 	## flood risk ==3 #15.2533,-61.3164
