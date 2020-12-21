@@ -16,7 +16,7 @@ def main():
 	'''
 	st.markdown(page_bg_img, unsafe_allow_html=True)
 	################
-	st.button("Re-run")
+	#st.button("Re-run")
 	# set up layout
 	st.title("Dominica GEO-Risk Evaluation")
 	pag_name = ["Risk Classification","Coordinate conversion WGS84-4326/ WGS84-32619 UTM ZONE19"]
