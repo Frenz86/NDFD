@@ -9,16 +9,37 @@ import folium
 from streamlit_folium import folium_static
 import matplotlib, matplotlib.pyplot as plt 
 import branca
+import shapefile #pip install pyshp
+import shapely.speedups
+shapely.speedups.enable()
 
+
+def read_shapefile(shp_path):
+	"""
+	Read a shapefile into a Pandas dataframe with a 'coords' column holding
+	the geometry information. This uses the pyshp package
+	"""
+	#read file, parse out the records and shapes
+	sf = shapefile.Reader(shp_path)
+	fields = [x[0] for x in sf.fields][1:]
+	records = [list(i) for i in sf.records()]
+	shps = [s.points for s in sf.shapes()]
+	#write into a dataframe
+	df = pd.DataFrame(columns=fields, data=records)
+	df = df.assign(coords=shps)
+	return df
+
+landslide_shp = gpd.read_file('Flood_and_Landslide_Datasets/landslides_1_4326.shp')
+landslide_json = 'Flood_and_Landslide_Datasets/landslides_1_4326.geojson'
+landslide_path = 'Flood_and_Landslide_Datasets/landslides_1_4326.shp'
+
+# Flood Risk (Vectorised)
+flood_shp = gpd.read_file('Flood_and_Landslide_Datasets/geonode_flood_hazard_map_vector.shp')
+flood_gj = geojson.load(open('Flood_and_Landslide_Datasets/geonode_flood_hazard_map_vector.geojson')) # Import geojson file # https://stackoverflow.com/questions/42753745/how-can-i-parse-geojson-with-python
+flood_path = 'Flood_and_Landslide_Datasets/geonode_flood_hazard_map_vector.shp'
 
 def main():
 	st.write('this map will use coordinate format WGS84/UTMzone19N')
-	landslide_shp = gpd.read_file('Flood_and_Landslide_Datasets/landslides_1_4326.shp')
-	landslide_json = 'Flood_and_Landslide_Datasets/landslides_1_4326.geojson'
-	# Flood Risk (Vectorised)
-	flood_shp = gpd.read_file('Flood_and_Landslide_Datasets/geonode_flood_hazard_map_vector.shp')
-	flood_gj = geojson.load(open('Flood_and_Landslide_Datasets/geonode_flood_hazard_map_vector.geojson')) # Import geojson file # https://stackoverflow.com/questions/42753745/how-can-i-parse-geojson-with-python
-
 	colors = ['#2b83ba', '#abdda4', '#ffffbf', '#fdae61', '#d7191c'] # these have been assigned to each FloodRisk category in the GeoJSON file on QGIS!!!
 	m = folium.Map(location=[15.4275, -61.3408], zoom_start=11) # center of island overview
 	
@@ -53,34 +74,48 @@ def main():
 	#-------------------
 # Text labels to enter the lat & long coordinates once you read them on the map
 	lat = st.text_input('Insert Latitude in the format WGS84/UTMzone19N (DD.dddd) for example: 15.2533')
-	if lat != '': 
-		latitude = float(lat)
-	
 	longi = st.text_input('Insert Longitude in the format WGS84/UTMzone19N (DD.dddd) for example: -61.3164')
-	if longi != '': 
+	
+	if lat != '' and longi != '': 
+		latitude = float(lat)
 		longitude = float(longi)
 
+	#DATAFRAME from SHAPEFILE
+	# df1 = read_shapefile(landslide_path)
+	# df2 = read_shapefile(flood_path)
+	# print(df2)
+
 	if st.button('Analyse Lat & Long'): # this is if you want to add a button to launch the analysis (without this, it does automatically when there's lat & long values in the cell)
-		p = Point(longitude,latitude)
 		st.header('Extracting Results for the location selected:\n(Lat: ' + str(latitude) +' & Long: ' + str(longitude) + ')')
 		# ======= Get Value from Shapefile
 		landslide_code = 'Outside Risk Zone'
-		# From a given Point coordinates, quickly/efficiently check if it's contained in any polygons geometry, and print out the LANDSLIDE code of that polygon if so. 
-		# this works, but is this teh most efficient way?!? Think it can be improved with lampda / apply / map, without iterating on the whole dataframe?
-		for elem in landslide_shp.loc[:,'geometry']:
-			if p.within(elem): 
-				landslide_code = landslide_shp.loc[landslide_shp.loc[:,'geometry'] == elem]['LANDSLIDES'].values[0]
+
+		p = Point(longitude,latitude)
+		def risk_land(longitude,latitude):
+			for i in landslide_shp.loc[:,'geometry']:
+				if p.within(i): 
+					landslide_code = landslide_shp.loc[landslide_shp.loc[:,'geometry'] == i]['LANDSLIDES'].values[0]
+					return landslide_code	
+
+		risk_land(longitude,latitude)
 		st.markdown('**-Landslide Risk: **'+ landslide_code)
 		st.write('wait for Flood Risk Analysis... ')
+		
+##################à##		
+		# for i in landslide_shp.loc[:,'geometry']:
+		# 	if p.within(i): 
+		# 		landslide_code = landslide_shp.loc[landslide_shp.loc[:,'geometry'] == i]['LANDSLIDES'].values[0]
+		# st.markdown('**-Landslide Risk: **'+ landslide_code)
+		# st.write('wait for Flood Risk Analysis... ')
 
 		# ======= Get Value from Raster
 		# From a given Point coordinates, quickly/efficiently check if it's contained in any polygons geometry, and print out the LANDSLIDE code of that polygon if so. 
 		# this works, but is this teh most efficient way?!? Think it can be improved with lampda / apply / map, without iterating on the whole dataframe?
 		frisk_code = 'NAN'
 		new_risk = 'NAN'
-		for elem in flood_shp.loc[:,'geometry']:
-			if p.within(elem): 
-				frisk_code = flood_shp.loc[flood_shp.loc[:,'geometry'] == elem]['FloodRisk'].values[0]
+		for k in flood_shp.loc[:,'geometry']:
+			if p.within(k): 
+				frisk_code = flood_shp.loc[flood_shp.loc[:,'geometry'] == k]['FloodRisk'].values[0]
 				new_risk = frisk_code-1
 				print(new_risk)
 			if new_risk == 0:
@@ -91,7 +126,7 @@ def main():
 		## flood risk ==4 #15.3393,-61.2603
 		## flood risk ==0 #15.3451,-61.3588
 		## LandslideNO + flood risk ==0 ## 15.3955,-61.2482
-		## LandslideNO + flood risk ==0 ## 15.3955,-61.2482
+		## LandslideXX + flood risk ==0 ## 15.4757,-61.2679
 
 		st.markdown('**-Flood risk: **' + str(new_risk))
 		url1 = 'tablerisk.png'
@@ -108,8 +143,6 @@ def main():
 #Landslide Risk
 # No Risk
 # xx Risk (1)
-
-
 if __name__ == "__main__":
 	main()
 
