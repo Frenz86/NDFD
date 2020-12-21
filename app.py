@@ -1,7 +1,7 @@
 import streamlit as st
 from pag1 import main as  pag1
-from pag2 import main as  pag2
-from pag3 import main as  pag3
+from pag2 import save as  pag2
+#from pag3 import main as  pag3
 
 #@st.cache(suppress_st_warning=True)
 def main():
