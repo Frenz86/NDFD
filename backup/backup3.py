@@ -15,7 +15,7 @@ import shapefile #pip install pyshp#
 import shapely.speedups
 shapely.speedups.enable()
 
-############# from shapefile to dataframe pandas #################
+
 def read_shapefile(shp_path):
 	"""
 	Read a shapefile into a Pandas dataframe with a 'coords' column holding
@@ -30,10 +30,11 @@ def read_shapefile(shp_path):
 	df = pd.DataFrame(columns=fields, data=records)
 	df = df.assign(coords=shps)
 	return df
-############### to export datafram in excel with button #############
+
 import base64
 from io import BytesIO
 #pip install xlsxwriter
+
 def to_excel(df):
 	output = BytesIO()
 	writer = pd.ExcelWriter(output, engine='xlsxwriter')
@@ -49,13 +50,12 @@ def get_table_download_link(df):
 	"""
 	val = to_excel(df)
 	b64 = base64.b64encode(val)  # val looks like b'...'
-	return f'<a href="data:application/octet-stream;base64,{b64.decode()}" download="extract.xlsx">Download xlsx file</a>' # decode b'abc' => abc
+	return f'<a href="data:application/octet-stream;base64,{b64.decode()}" download="extract.xlsx">Download csv file</a>' # decode b'abc' => abc
 
 # df = ... # your dataframe
 # st.markdown(get_table_download_link(df), unsafe_allow_html=True)
 
-##############################################################################################
-
+####################################################################################################
 # Landslide Risk (Vectorised)
 landslide_shp = gpd.read_file('Flood_and_Landslide_Datasets/landslides_1_4326.shp')
 landslide_json = 'Flood_and_Landslide_Datasets/landslides_1_4326.geojson'
@@ -64,19 +64,8 @@ landslide_json = 'Flood_and_Landslide_Datasets/landslides_1_4326.geojson'
 flood_shp = gpd.read_file('Flood_and_Landslide_Datasets/geonode_flood_hazard_map_vector.shp')
 flood_gj = geojson.load(open('Flood_and_Landslide_Datasets/geonode_flood_hazard_map_vector.geojson')) # Import geojson file # https://stackoverflow.com/questions/42753745/how-can-i-parse-geojson-with-python
 
-##DF
-#df = pd.DataFrame(np.random.randint(0,100,size=(100, 4)), columns=list('ABCD'))
-rows_list = []
-for row in input_rows:
-	dict1 = {}
-	# get input row in dictionary format
-	# key = col_name
-	dict1.update(blah..) 
-	rows_list.append(dict1)
-
-df = pd.DataFrame(rows_list)  
-
-
+df = pd.DataFrame(np.random.randint(0,100,size=(100, 4)),
+				columns=list('ABCD'))
 
 def main():
 	st.write('this map will use coordinate format WGS84/UTMzone19N')
@@ -158,16 +147,19 @@ def main():
 					image1 = Image.open(url1)
 
 					st.markdown(get_table_download_link(df), unsafe_allow_html=True)
-					st.image(image1, caption='',use_column_width=True) 
+					st.image(image1, caption='',use_column_width=True)
 				else:
 					st.markdown('**-Flood risk: **' + str(new_risk))
 					print(new_risk)
 					url1 = 'tablerisk.png'
 					image1 = Image.open(url1)
-					st.markdown(get_table_download_link(df), unsafe_allow_html=True)
 
+					st.markdown(get_table_download_link(df), unsafe_allow_html=True)
 					st.image(image1, caption='',use_column_width=True)
 					break 
+
+
+
 
 		## TEST ##
 		## flood risk ==3 #15.2533,-61.3164
