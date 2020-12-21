@@ -151,8 +151,8 @@ def main():
 					st.image(image1, caption='',use_column_width=True)
 					lst_dict.append({'c1':latitude, 'c2':longitude, 'c3': 1,'c4':1})
 					df=df.append(lst_dict)
-					from pag2 import save
-					save(4,4,6,7)
+					# from pag2 import save
+					# save(4,4,6,7)
 					break
 
 		else:
