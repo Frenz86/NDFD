@@ -75,11 +75,10 @@ def main():
 	folium_static(m)
 	#-------------------
 # Text labels to enter the lat & long coordinates once you read them on the map
-	lat = st.text_input('Insert Latitude in the format WGS84/UTMzone19N (DD.dddd) for example: 15.2533')
-	longi = st.text_input('Insert Longitude in the format WGS84/UTMzone19N (DD.dddd) for example: -61.3164')
-	if lat != '' and longi != '': 
-		latitude = float(lat)
-		longitude = float(longi)
+	lat_long = st.text_input('Insert Latitude and Longitude in the format WGS84/UTMzone19N (DD.dddd) for example: 15.2533,-61.3164')
+	if lat_long != '': 
+		latitude = float(lat_long.split(',')[0])
+		longitude = float(lat_long.split(',')[1])
 
 	if st.button('Analyse Lat & Long'): # this is if you want to add a button to launch the analysis (without this, it does automatically when there's lat & long values in the cell)
 		st.header('Extracting Results for the location selected:\n(Lat: ' + str(latitude) +' & Long: ' + str(longitude) + ')')
