@@ -46,8 +46,6 @@ flood_gj = geojson.load(open('Flood_and_Landslide_Datasets/geonode_flood_hazard_
 # columns=['latitude','longitude','Risk_Landslide','Risk_Flood']
 # #df = pd.DataFrame(index=index, columns=columns)
 
-
-
 def main():
 	st.write('this map will use coordinate format WGS84-EPSG 32619 UTM ZONE19')
 	colors = ['#2b83ba', '#abdda4', '#ffffbf', '#fdae61', '#d7191c'] # these have been assigned to each FloodRisk category in the GeoJSON file on QGIS!!!
@@ -102,8 +100,6 @@ def main():
 
 	if st.button('Analyse Lat & Long'): # this is if you want to add a button to launch the analysis (without this, it does automatically when there's lat & long values in the cell)
 		st.header('Extracting Results for the location selected:\n(Lat: ' + str(latitude) +' & Long: ' + str(longitude) + ')')
-		#coordinate = shapely.geometry.Point((-61.346482,15.393996,)) # outside
-		#coordinate = shapely.geometry.Point((-61.419855,15.396184,)) # 1771
 		coordinate = shapely.geometry.Point((longitude,latitude,))
 		# Printing a list of the coords to ensure iterable 
 		#list(coordinate.coords)
@@ -114,14 +110,21 @@ def main():
 			if p.within(i):
 				polig_landslide = landslide_shp[landslide_shp.geometry.intersects(coordinate)].values[0][0]
 				landslide_code =polig_landslide
-				print(landslide_code)
-				st.markdown('**-Landslide Risk: **'+ str(landslide_code))
-				st.write('wait for Flood Risk Analysis... ')
-				break
-		else:
-			landslide_code = 'Outside Risk Zone'
-			print(landslide_code)
-			st.markdown('**-Landslide Risk: **'+ str(landslide_code))
+				if landslide_code <=3:
+					print(landslide_code)
+					st.markdown('**-Landslide Risk: **'+ str(landslide_code))
+					st.write('wait for Flood Risk Analysis... ')
+				else:
+					landslide_code = 'Outside Risk Zone'
+					print(landslide_code)
+					st.markdown('**-Landslide Risk: **'+ str(landslide_code))
+					new_risk = 'Outside Flood Risk Zone'
+					print(new_risk)
+					st.markdown('**-Flood risk: **' + str(new_risk))
+					url1 = 'tablerisk.png'
+					image1 = Image.open(url1)
+					st.image(image1, caption='',use_column_width=True)
+					break
 		
 		######## Second loop for flood risk
 		frisk_code = 'NAN'
@@ -140,7 +143,7 @@ def main():
 
 					#st.markdown(get_table_download_link(df), unsafe_allow_html=True)
 					st.image(image1, caption='',use_column_width=True)
-				elif new_risk != 0:
+				elif new_risk <=4:
 					st.markdown('**-Flood risk: **' + str(new_risk))
 					print(new_risk)
 					url1 = 'tablerisk.png'
@@ -148,21 +151,12 @@ def main():
 
 					#st.markdown(get_table_download_link(df), unsafe_allow_html=True)
 					st.image(image1, caption='',use_column_width=True)
-					#break 
-				else:
-					new_risk = 'Outside Flood Risk Zone'
-					print(new_risk)
-					st.markdown('**-Flood risk: **' + str(new_risk))
-					#lst_dict = []
-					lst_dict.append({'c1':latitude, 'c2':longitude, 'c3': 1,'c4':1})
-					df=df.append(lst_dict)
-					break
-	# print(df)	
+					break 
 
 	## TEST ##
-	## flood risk ==3 #15.2533,-61.3164
-	## flood risk ==4 #15.3393,-61.2603
-	## flood risk ==0 #15.3451,-61.3588
+	## flood risk ==4 Landl ==1 #15.3393,-61.2603
+	## flood risk ==0 Landl ==2 15.5310,-61.4623
+	## flood risk ==0 Landl ==1 #15.3451,-61.3588
 	## outside flood and risk # 15.4265,-61.2447
 if __name__ == "__main__":
 	main()
