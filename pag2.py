@@ -12,7 +12,7 @@ URI_SQLITE_DB = "test.db"
 def init_db(conn: Connection):
 	conn.execute(
 		"""CREATE TABLE IF NOT EXISTS test
-			(INPUT1 INT,INPUT2 INT);"""
+			(INPUT1 INT,INPUT2 INT,INPUT3 INT,INPUT4 INT);"""
 	)
 	conn.commit()
 
@@ -55,17 +55,16 @@ def get_table_download_link(df):
 # df = ... # your dataframe
 # st.markdown(get_table_download_link(df), unsafe_allow_html=True)
 
-def save(x,y):
+def save(x,y,k,z):
 	#### First part DB ##########
 	def build_sidebar(conn: Connection):
 		if st.sidebar.button("Save to list"):
-			conn.execute(f"INSERT INTO test (INPUT1, INPUT2) VALUES ({input1}, {input2})")
+			conn.execute(f"INSERT INTO test (INPUT1, INPUT2,INPUT3, INPUT4) VALUES ({x}, {y},{k}, {z})")
 			conn.commit()
 	conn = get_connection(URI_SQLITE_DB)
 	init_db(conn)
 	#############################
-	input1 = x
-	input2 = y
+	x,y,k,z
 
 	################## Export to Excel SQLite
 	build_sidebar(conn)
@@ -78,4 +77,4 @@ def save(x,y):
 		st.markdown(get_table_download_link(df), unsafe_allow_html=True)
 	
 if __name__ == "__main__":
-	save(2,4)
+	save(2,4,6,8)

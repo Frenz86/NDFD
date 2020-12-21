@@ -92,7 +92,7 @@ def main():
 	col = ['c1', 'c2', 'c3','c4']
 	df = pd.DataFrame(columns=col)
 	lst_dict=[]
-
+ 
 # Text labels to enter the lat & long coordinates once you read them on the map
 	lat_long = st.text_input('Insert Latitude,Longitude in the format WGS84 UTM ZONE 19 EPSG 32619 (DD.dddd) for example: 15.2533,-61.3164')
 	if lat_long != '': 
@@ -151,7 +151,10 @@ def main():
 					st.image(image1, caption='',use_column_width=True)
 					lst_dict.append({'c1':latitude, 'c2':longitude, 'c3': 1,'c4':1})
 					df=df.append(lst_dict)
-					break 
+					from pag2 import save
+					save(4,4,6,7)
+					break
+
 		else:
 			new_risk = 'Outside Flood Risk Zone'
 			print(new_risk)
