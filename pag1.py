@@ -10,8 +10,10 @@ from streamlit_folium import folium_static
 import matplotlib, matplotlib.pyplot as plt 
 import branca
 import shapefile #pip install pyshp#
-#import shapely.speedups
-#shapely.speedups.enable()
+
+#fondamentali
+import shapely.speedups
+shapely.speedups.enable()
 
 
 def read_shapefile(shp_path):
@@ -75,7 +77,6 @@ def main():
 # Text labels to enter the lat & long coordinates once you read them on the map
 	lat = st.text_input('Insert Latitude in the format WGS84/UTMzone19N (DD.dddd) for example: 15.2533')
 	longi = st.text_input('Insert Longitude in the format WGS84/UTMzone19N (DD.dddd) for example: -61.3164')
-	
 	if lat != '' and longi != '': 
 		latitude = float(lat)
 		longitude = float(longi)
@@ -83,28 +84,28 @@ def main():
 	if st.button('Analyse Lat & Long'): # this is if you want to add a button to launch the analysis (without this, it does automatically when there's lat & long values in the cell)
 		st.header('Extracting Results for the location selected:\n(Lat: ' + str(latitude) +' & Long: ' + str(longitude) + ')')
 		# ======= Get Value from Shapefile
-
-		## mycode
 		#coordinate = shapely.geometry.Point((-61.346482,15.393996,)) # outside
 		#coordinate = shapely.geometry.Point((-61.419855,15.396184,)) # 1771
 		coordinate = shapely.geometry.Point((longitude,latitude,))
 		# Printing a list of the coords to ensure iterable 
 		#list(coordinate.coords)
-		# Searching for the geometry that intersects the point. Returning the index for the appropriate polygon. 
+		
+		######## First loop for flood risk
 		for i in landslide_shp.loc[:,'geometry']:
 			p = Point(longitude,latitude)
 			if p.within(i):
 				polig_landslide = landslide_shp[landslide_shp.geometry.intersects(coordinate)].values[0][0]
 				landslide_code =polig_landslide
-				print('find_landslide_pol',landslide_code)
+				print(landslide_code)
 				st.markdown('**-Landslide Risk: **'+ landslide_code)
 				st.write('wait for Flood Risk Analysis... ')
 				break
 		else:
 			landslide_code = 'Outside Risk Zone'
-			print('find_landslide_pol',landslide_code)
+			print(landslide_code)
 			st.markdown('**-Landslide Risk: **'+ landslide_code)
 		
+		######## Second loop for flood risk
 		frisk_code = 'NAN'
 		new_risk = 'NAN'
 		for i in flood_shp.loc[:,'geometry']:
@@ -112,18 +113,20 @@ def main():
 			if p.within(i):	
 				frisk_code = flood_shp[flood_shp.geometry.intersects(coordinate)].values[0][0]
 				new_risk = frisk_code-1
-				print(new_risk)
 				if new_risk == 0:
 					new_risk = 'No Risk'
 					st.markdown('**-Flood risk: **' + str(new_risk))
+					print(new_risk)
 					url1 = 'tablerisk.png'
 					image1 = Image.open(url1)
 					st.image(image1, caption='',use_column_width=True) 
 				else:
 					st.markdown('**-Flood risk: **' + str(new_risk))
+					print(new_risk)
 					url1 = 'tablerisk.png'
 					image1 = Image.open(url1)
-					st.image(image1, caption='',use_column_width=True) 
+					st.image(image1, caption='',use_column_width=True)
+					break 
 
 		## TEST ##
 		## flood risk ==3 #15.2533,-61.3164
