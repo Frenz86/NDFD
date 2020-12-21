@@ -10,7 +10,6 @@ from streamlit_folium import folium_static
 import matplotlib, matplotlib.pyplot as plt 
 import branca
 import shapefile #pip install pyshp#
-
 #fondamentali
 import shapely.speedups
 shapely.speedups.enable()
@@ -30,37 +29,10 @@ def read_shapefile(shp_path):
 	df = pd.DataFrame(columns=fields, data=records)
 	df = df.assign(coords=shps)
 	return df
-############### to export datafram in excel with button #############
-import base64
-from io import BytesIO
-#pip install xlsxwriter
-def to_excel(df):
-	output = BytesIO()
-	writer = pd.ExcelWriter(output, engine='xlsxwriter')
-	df.to_excel(writer, index=True, sheet_name='Sheet1') # <--- here
-	writer.save()
-	processed_data = output.getvalue()
-	return processed_data
-
-def get_table_download_link(df):
-	"""Generates a link allowing the data in a given panda dataframe to be downloaded
-	in:  dataframe
-	out: href string
-	"""
-	val = to_excel(df)
-	b64 = base64.b64encode(val)  # val looks like b'...'
-	return f'<a href="data:application/octet-stream;base64,{b64.decode()}" download="extract.xlsx">Download xlsx file</a>' # decode b'abc' => abc
-
-# df = ... # your dataframe
-# st.markdown(get_table_download_link(df), unsafe_allow_html=True)
-
 ##############################################################################################
-
 # Landslide Risk (Vectorised)
-# landslide_shp = gpd.read_file('Flood_and_Landslide_Datasets/landslides_1_4326.shp')
-# landslide_json = 'Flood_and_Landslide_Datasets/landslides_1_4326.geojson'
 landslide_shp = gpd.read_file('Flood_and_Landslide_Datasets/geonode_class3_elev.shp')
-landslide_json = 'Flood_and_Landslide_Datasets/geonode_class3_elev.geojson'
+landslide_json = 'Flood_and_Landslide_Datasets/geonode_class3_elev1.geojson'
 
 # Flood Risk (Vectorised)
 flood_shp = gpd.read_file('Flood_and_Landslide_Datasets/geonode_flood_hazard_map_vector.shp')
@@ -68,19 +40,32 @@ flood_gj = geojson.load(open('Flood_and_Landslide_Datasets/geonode_flood_hazard_
 
 ##DF
 #df = pd.DataFrame(np.random.randint(0,100,size=(100, 4)), columns=list('ABCD'))
-import datetime
-todays_date = datetime.datetime.now().date()
-index = pd.date_range(todays_date-datetime.timedelta(1), periods=1, freq='h')
-columns=['latitude','longitude','Risk_Landslide','Risk_Flood']
-df = pd.DataFrame(index=index, columns=columns)
+# import datetime
+# todays_date = datetime.datetime.now().date()
+# index = pd.date_range(todays_date-datetime.timedelta(1), periods=1, freq='d')
+# columns=['latitude','longitude','Risk_Landslide','Risk_Flood']
+# #df = pd.DataFrame(index=index, columns=columns)
 
 
 
 def main():
-	st.write('this map will use coordinate format WGS84/UTMzone19N')
+	st.write('this map will use coordinate format WGS84-EPSG 32619 UTM ZONE19')
 	colors = ['#2b83ba', '#abdda4', '#ffffbf', '#fdae61', '#d7191c'] # these have been assigned to each FloodRisk category in the GeoJSON file on QGIS!!!
 	m = folium.Map(location=[15.4275, -61.3408], zoom_start=11) # center of island overview
 	
+	# Show Landslide GeoJSON to the map
+	folium.GeoJson(
+	landslide_json,
+	name='Landslide',
+		style_function=lambda feature: {
+		# 'fillColor': feature['properties']['Color'],
+		# 'color' : feature['properties']['Color'],
+		'weight' : 1,
+		'fillOpacity' : 0.3,
+		}
+	).add_to(m)
+
+
 	## Show risk zones
 	folium.GeoJson(
 	flood_gj,
@@ -91,12 +76,6 @@ def main():
 		'weight' : 1,
 		'fillOpacity' : 0.3,
 		}
-	).add_to(m)
-
-	# Show Landslide GeoJSON to the map
-	folium.GeoJson(
-		landslide_json,
-		name='Landslide'
 	).add_to(m)
 
 	# Setup colormap MUST USE SAME COLORS AS QGIS GEOJSON FILE!!!!
@@ -110,11 +89,16 @@ def main():
 	folium.LayerControl().add_to(m)
 	folium_static(m)
 	#-------------------
+	col = ['c1', 'c2', 'c3','c4']
+	df = pd.DataFrame(columns=col)
+	lst_dict=[]
+
 # Text labels to enter the lat & long coordinates once you read them on the map
 	lat_long = st.text_input('Insert Latitude,Longitude in the format WGS84 UTM ZONE 19 EPSG 32619 (DD.dddd) for example: 15.2533,-61.3164')
 	if lat_long != '': 
 		latitude = float(lat_long.split(',')[0])
 		longitude = float(lat_long.split(',')[1])
+
 
 	if st.button('Analyse Lat & Long'): # this is if you want to add a button to launch the analysis (without this, it does automatically when there's lat & long values in the cell)
 		st.header('Extracting Results for the location selected:\n(Lat: ' + str(latitude) +' & Long: ' + str(longitude) + ')')
@@ -132,13 +116,13 @@ def main():
 				polig_landslide = landslide_shp[landslide_shp.geometry.intersects(coordinate)].values[0][0]
 				landslide_code =polig_landslide
 				print(landslide_code)
-				st.markdown('**-Landslide Risk: **'+ landslide_code)
+				st.markdown('**-Landslide Risk: **'+ str(landslide_code))
 				st.write('wait for Flood Risk Analysis... ')
 				break
 		else:
-			landslide_code = 'Outside Risk Zone'
+			landslide_code = 'Outside Landslide Zone'
 			print(landslide_code)
-			st.markdown('**-Landslide Risk: **'+ landslide_code)
+			st.markdown('**-Landslide Risk: **'+ str(landslide_code))
 		
 		######## Second loop for flood risk
 		frisk_code = 'NAN'
@@ -154,26 +138,34 @@ def main():
 					print(new_risk)
 					url1 = 'tablerisk.png'
 					image1 = Image.open(url1)
+					st.image(image1, caption='',use_column_width=True)
+					#lst_dict = []
+					lst_dict.append({'c1':latitude, 'c2':longitude, 'c3': 1,'c4':1})
+					df=df.append(lst_dict)
 
-					st.markdown(get_table_download_link(df), unsafe_allow_html=True)
-					st.image(image1, caption='',use_column_width=True) 
 				else:
 					st.markdown('**-Flood risk: **' + str(new_risk))
 					print(new_risk)
 					url1 = 'tablerisk.png'
 					image1 = Image.open(url1)
-					st.markdown(get_table_download_link(df), unsafe_allow_html=True)
-
 					st.image(image1, caption='',use_column_width=True)
+					lst_dict.append({'c1':latitude, 'c2':longitude, 'c3': 1,'c4':1})
+					df=df.append(lst_dict)
 					break 
+		else:
+			new_risk = 'Outside Flood Risk Zone'
+			print(new_risk)
+			st.markdown('**-Flood risk: **' + str(new_risk))
+			#lst_dict = []
+			lst_dict.append({'c1':latitude, 'c2':longitude, 'c3': 1,'c4':1})
+			df=df.append(lst_dict)
+	print(df)	
 
-		## TEST ##
-		## flood risk ==3 #15.2533,-61.3164
-		## flood risk ==4 #15.3393,-61.2603
-		## flood risk ==0 #15.3451,-61.3588
-		## Landslide NO risk + flood risk ==0 ## 15.4413,-61.3210
-		## LandslideXX + flood risk ==0 ## 15.4757,-61.2679
-
+	## TEST ##
+	## flood risk ==3 #15.2533,-61.3164
+	## flood risk ==4 #15.3393,-61.2603
+	## flood risk ==0 #15.3451,-61.3588
+	## outside flood and risk # 15.4265,-61.2447
 if __name__ == "__main__":
 	main()
 

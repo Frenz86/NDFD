@@ -1,6 +1,7 @@
 import streamlit as st
 from pag1 import main as  pag1
 from pag2 import main as  pag2
+from pag3 import main as  pag3
 
 #@st.cache(suppress_st_warning=True)
 def main():
@@ -18,7 +19,7 @@ def main():
 	st.button("Re-run")
 	# set up layout
 	st.title("Dominica GEO-Risk Evaluation")
-	pag_name = ["Risk Classification","Coordinate conversion to WGS84/UTM ZONE 19 EPSG 32619"]
+	pag_name = ["Risk Classification","Coordinate conversion to WGS84 4326/ WGS84-EPSG 32619 UTM ZONE19","pag3"]
 	
 	OPTIONS = pag_name
 	#sim_selection = st.radio('Select the option', OPTIONS)
@@ -28,6 +29,8 @@ def main():
 		pag1()
 	elif sim_selection == pag_name[1]:
 		pag2()
+	elif sim_selection == pag_name[2]:
+		pag3()
 	else:
 		st.markdown("Something went wrong. We are looking into it.")
 	
