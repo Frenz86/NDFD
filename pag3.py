@@ -1,66 +1,73 @@
 import pandas as pd
-from pathlib import Path
-import sqlite3
-from sqlite3 import Connection
 import streamlit as st
-import pandas as pd
-
-#URI_SQLITE_DB = "test.db"
-URI_SQLITE_DB = "test.db"
-
-def init_db(conn: Connection):
-	conn.execute(
-		"""CREATE TABLE IF NOT EXISTS test
-			(
-				INPUT1 INT,
-				INPUT2 INT
-			);"""
-	)
-	conn.commit()
-
-def build_sidebar(conn: Connection):
-	st.sidebar.header("Configuration")
-	input1 = st.sidebar.slider("Input 1", 0, 100)
-	input2 = st.sidebar.slider("Input 2", 0, 100)
-	if st.sidebar.button("Save to database"):
-		conn.execute(f"INSERT INTO test (INPUT1, INPUT2) VALUES ({input1}, {input2})")
-		conn.commit()
+import pyproj
+_projections = {}
+def zone(coordinates):
+	if 56 <= coordinates[1] < 64 and 3 <= coordinates[0] < 12:
+		return 32
+	if 72 <= coordinates[1] < 84 and 0 <= coordinates[0] < 42:
+		if coordinates[0] < 9:
+			return 31
+		elif coordinates[0] < 21:
+			return 33
+		elif coordinates[0] < 33:
+			return 35
+		return 37
+	return int((coordinates[0] + 180) / 6) + 1
 
 
-def display_data(conn: Connection):
-	if st.checkbox("Display data in sqlite databse"):
-		st.dataframe(get_data(conn))
+def letter(coordinates):
+	return 'CDEFGHJKLMNPQRSTUVWXX'[int((coordinates[1] + 80) / 8)]
 
+def project(coordinates):
+	z = zone(coordinates)
+	l = letter(coordinates)
+	if z not in _projections:
+		_projections[z] = pyproj.Proj(proj='utm', zone=z, ellps='WGS84')
+	x, y = _projections[z](coordinates[0], coordinates[1])
+	if y < 0:
+		y += 10000000
+	return z, l, x, y
 
-def run_calculator(conn: Connection):
-	if st.button("Run calculator"):
-		st.info("Run your function")
-		df = get_data(conn)
-		st.write(df.sum())
+def unproject(z, l, x, y):
+	if z not in _projections:
+		_projections[z] = pyproj.Proj(proj='utm', zone=z, ellps='WGS84')
+	if l < 'N':
+		y -= 10000000
+	lng, lat = _projections[z](x, y, inverse=True)
+	return (lat,lng)
 
-
-def get_data(conn: Connection):
-	df = pd.read_sql("SELECT * FROM test", con=conn)
-	return df
-
-
-@st.cache(hash_funcs={Connection: id})
-def get_connection(path: str):
-	"""Put the connection in cache to reuse if path does not change between Streamlit reruns.
-	NB : https://stackoverflow.com/questions/48218065/programmingerror-sqlite-objects-created-in-a-thread-can-only-be-used-in-that-sa
-	"""
-	return sqlite3.connect(path, check_same_thread=False)
 
 def main():
-	st.title("My Super Calculator")
-	st.markdown("Enter data in database from sidebar, then run the **mighty** calculator")
+	st.title('Conversion WGS84-4326/WGS84-32619 UTM ZONE19')
+	#https://awsm-tools.com/geo/utm-to-geographic
+	#unproject(24,'N',510000,7042000)
+	## (63.50614385957355, -38.799090003171294)
+	st.write("Reference example: 24 N 510000 7042000  -->  63.5061, -38.7991")
+	input1 = st.text_input(' Insert the zone number (ex. 24)')
+	if input1 != '': 
+		zone = float(input1)
+		
+	input2 = st.text_input(' Insert zone letter (ex. N)')
+	if input2 != '': 
+		letter = str(input2)
 
-	conn = get_connection(URI_SQLITE_DB)
-	init_db(conn)
+	input3 = st.text_input(' Insert the projected latitude x (ex. 510000)')
+	if input3 != '': 
+		x = float(input3)
 
-	build_sidebar(conn)
-	display_data(conn)
-	run_calculator(conn)
+	input4 = st.text_input(' Insert the projected longitude y (ex. 7042000)')
+	if input4 != '': 
+		y = float(input4)    
+
+	if st.button('Conver to WGS84-32619'):
+		st.markdown('**Latitude, Longitude**')
+		conversion = unproject(zone,letter,x,y)
+		Latitude = round(float(conversion[0]),4) #63
+		Longitude = round(float(conversion[1]),4)
+		st.header(str(Latitude)+','+str(Longitude))
+		st.write('Conversion Done!')
+		st.write('Copy and Paste WGS84-32619 coordinate to the Risk Classificator')
 
 if __name__ == "__main__":
 	main()

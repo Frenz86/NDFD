@@ -47,7 +47,7 @@ flood_gj = geojson.load(open('Flood_and_Landslide_Datasets/geonode_flood_hazard_
 # #df = pd.DataFrame(index=index, columns=columns)
 
 def main():
-	st.write('this map will use coordinate format WGS84-EPSG 32619 UTM ZONE19')
+	
 	colors = ['#2b83ba', '#abdda4', '#ffffbf', '#fdae61', '#d7191c'] # these have been assigned to each FloodRisk category in the GeoJSON file on QGIS!!!
 	m = folium.Map(location=[15.4275, -61.3408], zoom_start=11) # center of island overview
 	
@@ -86,13 +86,14 @@ def main():
 	m.add_child(folium.LatLngPopup()) # It's not possible to save lat long automatically from clicking on it :-( . # https://github.com/python-visualization/folium/issues/520
 	folium.LayerControl().add_to(m)
 	folium_static(m)
+	st.write('This map will use coordinate format WGS84-32619 UTM ZONE19')
 	#-------------------
 	col = ['c1', 'c2', 'c3','c4']
 	df = pd.DataFrame(columns=col)
 	lst_dict=[]
  
 # Text labels to enter the lat & long coordinates once you read them on the map
-	lat_long = st.text_input('Insert Latitude,Longitude in the format WGS84 UTM ZONE 19 EPSG 32619 (DD.dddd) for example: 15.2533,-61.3164')
+	lat_long = st.text_input('Insert Latitude,Longitude in the format WGS84-32619 UTM ZONE19 (DD.dddd) for example: 15.2533,-61.3164')
 	if lat_long != '': 
 		latitude = float(lat_long.split(',')[0])
 		longitude = float(lat_long.split(',')[1])

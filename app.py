@@ -1,7 +1,7 @@
 import streamlit as st
 from pag1 import main as  pag1
-from pag2 import save as  pag2
-#from pag3 import main as  pag3
+#from pag2 import save as  pag2
+from pag3 import main as  pag3
 
 #@st.cache(suppress_st_warning=True)
 def main():
@@ -18,7 +18,7 @@ def main():
 	################
 	#st.button("Re-run")
 	# set up layout
-	st.title("Dominica GEO-Risk Evaluation")
+	st.title("Dominica's GEO-Risk Classificator")
 	pag_name = ["Risk Classification","Coordinate conversion WGS84-4326/ WGS84-32619 UTM ZONE19"]
 	
 	OPTIONS = pag_name
@@ -28,9 +28,9 @@ def main():
 	if sim_selection == pag_name[0]:
 		pag1()
 	elif sim_selection == pag_name[1]:
-		pag2()
-	elif sim_selection == pag_name[2]:
 		pag3()
+	elif sim_selection == pag_name[2]:
+		pag2()
 	else:
 		st.markdown("Something went wrong. We are looking into it.")
 	
