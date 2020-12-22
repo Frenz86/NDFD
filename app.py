@@ -3,6 +3,9 @@ from pag1 import main as  pag1
 from pag2 import save as  pag2
 from pag3 import main as  pag3
 
+st.set_page_config(page_title='Risk-Classificator',page_icon='🌎')
+
+
 #@st.cache(suppress_st_warning=True)
 def main():
 	# ################ css background #########################

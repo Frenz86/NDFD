@@ -44,19 +44,19 @@ def main():
 	#unproject(24,'N',510000,7042000)
 	## (63.50614385957355, -38.799090003171294)
 	st.write("Reference example: 24 N 510000 7042000  -->  63.5061, -38.7991")
-	input1 = st.text_input(' Insert the zone number (ex. 24)')
+	input1 = st.text_input(' Insert the zone number (ex. 24)',max_chars=2)
 	if input1 != '': 
 		zone = float(input1)
 		
-	input2 = st.text_input(' Insert zone letter (ex. N)')
+	input2 = st.text_input(' Insert zone letter (ex. N)',max_chars=1)
 	if input2 != '': 
 		letter = str(input2)
 
-	input3 = st.text_input(' Insert the projected latitude x (ex. 510000)')
+	input3 = st.text_input(' Insert the projected latitude x (ex. 510000)',max_chars=10)
 	if input3 != '': 
 		x = float(input3)
 
-	input4 = st.text_input(' Insert the projected longitude y (ex. 7042000)')
+	input4 = st.text_input(' Insert the projected longitude y (ex. 7042000)',max_chars=10)
 	if input4 != '': 
 		y = float(input4)    
 

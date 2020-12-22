@@ -93,7 +93,7 @@ def main():
 	lst_dict=[]
  
 # Text labels to enter the lat & long coordinates once you read them on the map
-	lat_long = st.text_input('Insert Latitude,Longitude in the format WGS84-32619 UTM ZONE19 (DD.dddd) for example: 15.2533,-61.3164')
+	lat_long = st.text_input('Insert Latitude,Longitude (without spaces) format WGS84-32619 (DD.dddd) for example: 15.2533,-61.3164',max_chars=16)
 	if lat_long != '': 
 		latitude = float(lat_long.split(',')[0])
 		longitude = float(lat_long.split(',')[1])
@@ -106,6 +106,7 @@ def main():
 		#list(coordinate.coords)
 		
 		######## First loop for flood risk
+		landslide_code='NAN'
 		for i in landslide_shp.loc[:,'geometry']:
 			p = Point(longitude,latitude)
 			if p.within(i):
@@ -114,7 +115,7 @@ def main():
 				if landslide_code <=3:
 					print(landslide_code)
 					st.markdown('**-Landslide Risk: **'+ str(landslide_code))
-					st.write('wait for Flood Risk Analysis... ')
+					#st.write('wait for Flood Risk Analysis... ')
 				else:
 					landslide_code = 'Outside Risk Zone'
 					print(landslide_code)
