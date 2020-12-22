@@ -1,6 +1,6 @@
 import streamlit as st
 from pag1 import main as  pag1
-#from pag2 import save as  pag2
+from pag2 import save as  pag2
 from pag3 import main as  pag3
 
 #@st.cache(suppress_st_warning=True)
@@ -28,7 +28,7 @@ def main():
 	if sim_selection == pag_name[0]:
 		pag1()
 	elif sim_selection == pag_name[1]:
-		pag3()
+		pag2()
 	elif sim_selection == pag_name[2]:
 		pag2()
 	else:
