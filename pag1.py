@@ -91,7 +91,7 @@ def main():
 	# lst_dict=[]
 
 	######## Dictionary Landslide-Flood-Risk
-	dict_Landslide = {1:'Low-Risk',2:'Moderate-Risk',3:'High-Risk'}
+	dict_Landslide = {0:'Low-Risk',1:'Moderate-Risk',2:'High-Risk'}
 	dict_Flood = {0:'No-Risk',1:'Low-Risk',2:'Moderate-Risk',3:'High-Risk',4:'Very High-Risk'}
 # Text labels to enter the lat & long coordinates once you read them on the map
 	lat_long = st.text_input('Insert Latitude,Longitude (without spaces) format WGS84-EPGS4326 (DD.dddd) for example: 15.2533,-61.3164',max_chars=16)
@@ -111,8 +111,8 @@ def main():
 			p = Point(longitude,latitude)
 			if p.within(i):
 				polig_landslide = landslide_shp[landslide_shp.geometry.intersects(coordinate)].values[0][0]
-				landslide_code =polig_landslide
-				if landslide_code <=3:
+				landslide_code =polig_landslide-1
+				if landslide_code <=2:
 					for key,value in dict_Landslide.items():
 						if key == landslide_code:
 							landslide_str=value
@@ -144,7 +144,7 @@ def main():
 					for key,value in dict_Flood.items():
 						if key == new_risk:
 							flood_str=value
-					st.markdown('**-Flood risk:     **' + str(new_risk)+' ---> '+flood_str)
+					st.markdown('**-Flood risk: **' + str(new_risk)+'---> '+flood_str)
 					print(new_risk)
 					url1 = 'tablerisk.png'
 					image1 = Image.open(url1)
