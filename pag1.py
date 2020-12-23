@@ -93,14 +93,11 @@ def main():
 	######## Dictionary Landslide-Flood-Risk
 	dict_Landslide = {1:'Low-Risk',2:'Moderate-Risk',3:'High-Risk'}
 	dict_Flood = {0:'No-Risk',1:'Low-Risk',2:'Moderate-Risk',3:'High-Risk',4:'Very High-Risk'}
-
-
 # Text labels to enter the lat & long coordinates once you read them on the map
 	lat_long = st.text_input('Insert Latitude,Longitude (without spaces) format WGS84-EPGS4326 (DD.dddd) for example: 15.2533,-61.3164',max_chars=16)
 	if lat_long != '': 
 		latitude = float(lat_long.split(',')[0])
 		longitude = float(lat_long.split(',')[1])
-
 
 	if st.button('Analyse Lat & Long'): # this is if you want to add a button to launch the analysis (without this, it does automatically when there's lat & long values in the cell)
 		st.header('Extracting Results for the location selected:\n(Lat: ' + str(latitude) +' & Long: ' + str(longitude) + ')')
@@ -108,7 +105,6 @@ def main():
 		# Printing a list of the coords to ensure iterable 
 		#list(coordinate.coords)
 		
-
 		######## First loop for Landslide		
 		landslide_code='NAN'
 		for i in landslide_shp.loc[:,'geometry']:
@@ -148,7 +144,7 @@ def main():
 					for key,value in dict_Flood.items():
 						if key == new_risk:
 							flood_str=value
-					st.markdown('**-Flood risk: **' + str(new_risk)+' ---> '+flood_str)
+					st.markdown('**-Flood risk:     **' + str(new_risk)+' ---> '+flood_str)
 					print(new_risk)
 					url1 = 'tablerisk.png'
 					image1 = Image.open(url1)
