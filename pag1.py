@@ -14,7 +14,6 @@ import branca
 import shapely.speedups
 shapely.speedups.enable()
 
-
 ############# from shapefile to dataframe pandas #################
 def read_shapefile(shp_path):
 	"""
@@ -82,7 +81,7 @@ def risk_prediction(longitude,latitude):
 		return landslide_code,new_risk
 		#st.image(image1, caption='',width=350)
 
-@st.cache
+#@st.cache(suppress_st_warning=True)
 def show_maps():
 	colors = ['#2b83ba', '#abdda4', '#ffffbf', '#fdae61', '#d7191c'] # these have been assigned to each FloodRisk category in the GeoJSON file on QGIS!!!
 	m = folium.Map(location=[15.4275, -61.3408], zoom_start=11) # center of island overview
@@ -123,9 +122,9 @@ def show_maps():
 	folium_static(m)
 
 def main():
-	show_maps()
-	st.write('This map uses coordinate format WGS84-EPGS4326')
-	#-------------------
+	if st.button("show map"):
+		show_maps()
+		st.write('This map uses coordinate format WGS84-EPGS4326')
 # Text labels to enter the lat & long coordinates once you read them on the map
 	lat_long = st.text_input('Insert Latitude,Longitude (without spaces) format WGS84-EPGS4326 (DD.dddd) for example: 15.2533,-61.3164',max_chars=16)
 	if lat_long != '': 
