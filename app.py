@@ -31,7 +31,7 @@ def main():
 	if sim_selection == pag_name[0]:
 		pag1()
 	elif sim_selection == pag_name[1]:
-		pag2()
+		pag3()
 	elif sim_selection == pag_name[2]:
 		pag2()
 	else:
