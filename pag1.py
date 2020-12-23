@@ -82,7 +82,7 @@ def risk_prediction(longitude,latitude):
 		#st.image(image1, caption='',width=350)
 
 #@st.cache(suppress_st_warning=True)
-def show_maps():
+def show_maps_complete():
 	colors = ['#2b83ba', '#abdda4', '#ffffbf', '#fdae61', '#d7191c'] # these have been assigned to each FloodRisk category in the GeoJSON file on QGIS!!!
 	m = folium.Map(location=[15.4275, -61.3408], zoom_start=11) # center of island overview
 	
@@ -121,9 +121,53 @@ def show_maps():
 	folium.LayerControl().add_to(m)
 	folium_static(m)
 
+def show_maps_Flood():
+	colors = ['#2b83ba', '#abdda4', '#ffffbf', '#fdae61', '#d7191c'] # these have been assigned to each FloodRisk category in the GeoJSON file on QGIS!!!
+	m = folium.Map(location=[15.4275, -61.3408], zoom_start=11) # center of island overview
+	
+	# # Show Landslide GeoJSON to the map
+	# folium.GeoJson(
+	# landslide_json,
+	# name='Landslide',
+	# 	style_function=lambda feature: {
+	# 	# 'fillColor': feature['properties']['Color'],
+	# 	# 'color' : feature['properties']['Color'],
+	# 	'weight' : 1,
+	# 	'fillOpacity' : 0.3,
+	# 	}
+	# ).add_to(m)
+
+	## Show risk zones
+	folium.GeoJson(
+	flood_gj,
+	name='Flood Risk',
+	style_function=lambda feature: {
+		'fillColor': feature['properties']['Color'],
+		'color' : feature['properties']['Color'],
+		'weight' : 1,
+		'fillOpacity' : 0.3,
+		}
+	).add_to(m)
+
+	# Setup colormap MUST USE SAME COLORS AS QGIS GEOJSON FILE!!!!
+	levels = len(colors)
+	cmap = branca.colormap.LinearColormap(colors, vmin=0, vmax=4).to_step(levels-1)
+	cmap.add_to(m)
+
+	# Enable lat-long Popup; LayerControl; Call to render Folium map in Streamlit
+	m.add_child(folium.ClickForMarker(popup='Waypoint (Double-click to remove it)')) # and click-for-marker functionality (dynamic)
+	m.add_child(folium.LatLngPopup()) # It's not possible to save lat long automatically from clicking on it :-( . # https://github.com/python-visualization/folium/issues/520
+	folium.LayerControl().add_to(m)
+	folium_static(m)
+
+
+
 def main():
-	if st.button("show map"):
-		show_maps()
+	if st.button("show map with both risk Layers"):
+		show_maps_complete()
+		st.write('This map uses coordinate format WGS84-EPGS4326')
+	else:
+		show_maps_Flood()
 		st.write('This map uses coordinate format WGS84-EPGS4326')
 # Text labels to enter the lat & long coordinates once you read them on the map
 	lat_long = st.text_input('Insert Latitude,Longitude (without spaces) format WGS84-EPGS4326 (DD.dddd) for example: 15.2533,-61.3164',max_chars=16)
