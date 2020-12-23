@@ -67,6 +67,24 @@ flood_gj = geojson.load(open('Flood_and_Landslide_Datasets/geonode_flood_hazard_
 # index = pd.date_range(todays_date-datetime.timedelta(1), periods=1, freq='d')
 # columns=['latitude','longitude','Risk_Landslide','Risk_Flood']
 # #df = pd.DataFrame(index=index, columns=columns)
+@st.cache
+def risk_prediction(longitude,latitude):
+		coordinate = shapely.geometry.Point((longitude,latitude,))
+		polig_landslide = landslide_shp[landslide_shp.geometry.intersects(coordinate)].values[0][0]
+		landslide_code =polig_landslide-1
+		print(landslide_code)
+		st.markdown('**-Landslide Risk: **'+ str(landslide_code)+' ---> '+ dict2(landslide_code))
+		
+		frisk_code = flood_shp[flood_shp.geometry.intersects(coordinate)].values[0][0]
+		new_risk = frisk_code-1
+		#if new_risk <=4:
+		st.markdown('**-Flood risk: **' + str(new_risk)+'---> '+dict1(new_risk))
+		print(new_risk)
+		url1 = 'tablerisk.png'
+		image1 = Image.open(url1)
+		#st.markdown(get_table_download_link(df), unsafe_allow_html=True)
+		st.image(image1, caption='',width=350)
+
 
 def main():
 	colors = ['#2b83ba', '#abdda4', '#ffffbf', '#fdae61', '#d7191c'] # these have been assigned to each FloodRisk category in the GeoJSON file on QGIS!!!
@@ -116,22 +134,9 @@ def main():
 
 	if st.button('Analyse Lat & Long'): # this is if you want to add a button to launch the analysis (without this, it does automatically when there's lat & long values in the cell)
 		st.header('Extracting Results for the location selected:\n(Lat: ' + str(latitude) +' & Long: ' + str(longitude) + ')')
-		coordinate = shapely.geometry.Point((longitude,latitude,))
-
-		polig_landslide = landslide_shp[landslide_shp.geometry.intersects(coordinate)].values[0][0]
-		landslide_code =polig_landslide-1
-		print(landslide_code)
-		st.markdown('**-Landslide Risk: **'+ str(landslide_code)+' ---> '+ dict2(landslide_code))
 		
-		frisk_code = flood_shp[flood_shp.geometry.intersects(coordinate)].values[0][0]
-		new_risk = frisk_code-1
-		#if new_risk <=4:
-		st.markdown('**-Flood risk: **' + str(new_risk)+'---> '+dict1(new_risk))
-		print(new_risk)
-		url1 = 'tablerisk.png'
-		image1 = Image.open(url1)
-		#st.markdown(get_table_download_link(df), unsafe_allow_html=True)
-		st.image(image1, caption='',width=350)
+		
+		risk_prediction(longitude,latitude)
 
 	## TEST ##
 	## flood risk ==4 Landl ==0 #15.3393,-61.2603
