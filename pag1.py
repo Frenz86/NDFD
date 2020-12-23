@@ -9,7 +9,7 @@ import folium
 from streamlit_folium import folium_static
 import matplotlib, matplotlib.pyplot as plt 
 import branca
-import shapefile #pip install pyshp#
+#import shapefile #pip install pyshp#
 #fondamentali
 import shapely.speedups
 shapely.speedups.enable()
@@ -50,7 +50,7 @@ def dict1(new_risk):
 		if key == new_risk:
 			flood_str=value
 			return str(flood_str)
-
+########################################################################################
 # Landslide Risk (Vectorised)
 landslide_shp = gpd.read_file('Flood_and_Landslide_Datasets/geonode_class3_elev.shp')
 landslide_json = 'Flood_and_Landslide_Datasets/geonode_class3_elev1.geojson'
@@ -107,13 +107,6 @@ def main():
 	folium_static(m)
 	st.write('This map uses coordinate format WGS84-EPGS4326')
 	#-------------------
-	# col = ['c1', 'c2', 'c3','c4']
-	# df = pd.DataFrame(columns=col)
-	# lst_dict=[]
-
-	######## Dictionary Landslide-Flood-Risk
-	#dict_Landslide = {0:'No-Risk',1:'Low-Risk',2:'Moderate-Risk'}
-	#dict_Flood = {0:'No-Risk',1:'Low-Risk',2:'Moderate-Risk',3:'High-Risk',4:'Very High-Risk'}
 # Text labels to enter the lat & long coordinates once you read them on the map
 	lat_long = st.text_input('Insert Latitude,Longitude (without spaces) format WGS84-EPGS4326 (DD.dddd) for example: 15.2533,-61.3164',max_chars=16)
 	if lat_long != '': 
@@ -126,7 +119,7 @@ def main():
 		# Printing a list of the coords to ensure iterable 
 		#list(coordinate.coords)
 		
-		######## First loop for Landslide		
+		######## Loop for Landslide	and Fllod
 		landslide_code='NAN'
 		for i in landslide_shp.loc[:,'geometry']:
 			p = Point(longitude,latitude)
@@ -147,13 +140,6 @@ def main():
 				#st.markdown(get_table_download_link(df), unsafe_allow_html=True)
 				st.image(image1, caption='',width=350)
 				break 
-				
-				
-				
-				
-				
-				
-					#st.write('wait for Flood Risk Analysis... '
 				# else:
 				# 	###seems doesn't work!
 				# 	landslide_code = 'Outside Risk Zone'
@@ -166,23 +152,6 @@ def main():
 				# 	image1 = Image.open(url1)
 				# 	st.image(image1, caption='',use_column_width=True)
 				# 	break
-		
-		######## Second loop for flood risk
-		# frisk_code = 'NAN'
-		# new_risk = 'NAN'
-		# for i in flood_shp.loc[:,'geometry']:
-		# 	p = Point(longitude,latitude)
-		# 	if p.within(i):	
-		# 		frisk_code = flood_shp[flood_shp.geometry.intersects(coordinate)].values[0][0]
-		# 		new_risk = frisk_code-1
-		# 		#if new_risk <=4:
-		# 		st.markdown('**-Flood risk: **' + str(new_risk)+'---> '+dict1(new_risk))
-		# 		print(new_risk)
-		# 		url1 = 'tablerisk.png'
-		# 		image1 = Image.open(url1)
-		# 		#st.markdown(get_table_download_link(df), unsafe_allow_html=True)
-		# 		st.image(image1, caption='',width=350)
-		# 		break 
 
 	## TEST ##
 	## flood risk ==4 Landl ==0 #15.3393,-61.2603
