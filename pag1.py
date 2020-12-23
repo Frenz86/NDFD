@@ -86,7 +86,7 @@ def main():
 	m.add_child(folium.LatLngPopup()) # It's not possible to save lat long automatically from clicking on it :-( . # https://github.com/python-visualization/folium/issues/520
 	folium.LayerControl().add_to(m)
 	folium_static(m)
-	st.write('This map will use coordinate format WGS84-32619 UTM ZONE19')
+	st.write('This map uses coordinate format WGS84-32619 UTM ZONE19')
 	#-------------------
 	col = ['c1', 'c2', 'c3','c4']
 	df = pd.DataFrame(columns=col)
