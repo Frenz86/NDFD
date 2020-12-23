@@ -31,21 +31,6 @@ def read_shapefile(shp_path):
 	df = df.assign(coords=shps)
 	return df
 ##############################################################################################
-
-# Landslide Risk (Vectorised)
-landslide_shp = gpd.read_file('Flood_and_Landslide_Datasets/geonode_class3_elev.shp')
-landslide_json = 'Flood_and_Landslide_Datasets/geonode_class3_elev1.geojson'
-# Flood Risk (Vectorised)
-flood_shp = gpd.read_file('Flood_and_Landslide_Datasets/geonode_flood_hazard_map_vector.shp')
-flood_gj = geojson.load(open('Flood_and_Landslide_Datasets/geonode_flood_hazard_map_vector.geojson')) # Import geojson file # https://stackoverflow.com/questions/42753745/how-can-i-parse-geojson-with-python
-##DF
-#df = pd.DataFrame(np.random.randint(0,100,size=(100, 4)), columns=list('ABCD'))
-# import datetime
-# todays_date = datetime.datetime.now().date()
-# index = pd.date_range(todays_date-datetime.timedelta(1), periods=1, freq='d')
-# columns=['latitude','longitude','Risk_Landslide','Risk_Flood']
-# #df = pd.DataFrame(index=index, columns=columns)
-#################################################################
 @st.cache
 def dict2(landslide_code):
 	dict_Landslide = {0:'No-Risk',
@@ -67,6 +52,21 @@ def dict1(new_risk):
 			flood_str=value
 			return str(flood_str)
 ########################################################################################
+# Landslide Risk (Vectorised)
+landslide_shp = gpd.read_file('Flood_and_Landslide_Datasets/geonode_class3_elev.shp')
+landslide_json = 'Flood_and_Landslide_Datasets/geonode_class3_elev1.geojson'
+
+# Flood Risk (Vectorised)
+flood_shp = gpd.read_file('Flood_and_Landslide_Datasets/geonode_flood_hazard_map_vector.shp')
+flood_gj = geojson.load(open('Flood_and_Landslide_Datasets/geonode_flood_hazard_map_vector.geojson')) # Import geojson file # https://stackoverflow.com/questions/42753745/how-can-i-parse-geojson-with-python
+
+##DF
+#df = pd.DataFrame(np.random.randint(0,100,size=(100, 4)), columns=list('ABCD'))
+# import datetime
+# todays_date = datetime.datetime.now().date()
+# index = pd.date_range(todays_date-datetime.timedelta(1), periods=1, freq='d')
+# columns=['latitude','longitude','Risk_Landslide','Risk_Flood']
+# #df = pd.DataFrame(index=index, columns=columns)
 @st.cache
 def risk_prediction(longitude,latitude):
 		coordinate = shapely.geometry.Point((longitude,latitude,))
@@ -82,8 +82,7 @@ def risk_prediction(longitude,latitude):
 		return landslide_code,new_risk
 		#st.image(image1, caption='',width=350)
 
-@st.cache
-def show_maps():
+def main():
 	colors = ['#2b83ba', '#abdda4', '#ffffbf', '#fdae61', '#d7191c'] # these have been assigned to each FloodRisk category in the GeoJSON file on QGIS!!!
 	m = folium.Map(location=[15.4275, -61.3408], zoom_start=11) # center of island overview
 	
@@ -121,9 +120,6 @@ def show_maps():
 	m.add_child(folium.LatLngPopup()) # It's not possible to save lat long automatically from clicking on it :-( . # https://github.com/python-visualization/folium/issues/520
 	folium.LayerControl().add_to(m)
 	folium_static(m)
-
-def main():
-	show_maps()
 	st.write('This map uses coordinate format WGS84-EPGS4326')
 	#-------------------
 # Text labels to enter the lat & long coordinates once you read them on the map
