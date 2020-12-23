@@ -89,7 +89,12 @@ def main():
 	# col = ['c1', 'c2', 'c3','c4']
 	# df = pd.DataFrame(columns=col)
 	# lst_dict=[]
- 
+
+	######## Dictionary Landslide-Flood-Risk
+	dict_Landslide = {1:'Low-Risk',2:'Moderate-Risk',3:'High-Risk'}
+	dict_Flood = {0:'No-Risk',1:'Low-Risk',2:'Moderate-Risk',3:'High-Risk',4:'Very High-Risk'}
+
+
 # Text labels to enter the lat & long coordinates once you read them on the map
 	lat_long = st.text_input('Insert Latitude,Longitude (without spaces) format WGS84-EPGS4326 (DD.dddd) for example: 15.2533,-61.3164',max_chars=16)
 	if lat_long != '': 
@@ -103,7 +108,8 @@ def main():
 		# Printing a list of the coords to ensure iterable 
 		#list(coordinate.coords)
 		
-		######## First loop for flood risk
+
+		######## First loop for Landslide		
 		landslide_code='NAN'
 		for i in landslide_shp.loc[:,'geometry']:
 			p = Point(longitude,latitude)
@@ -111,10 +117,14 @@ def main():
 				polig_landslide = landslide_shp[landslide_shp.geometry.intersects(coordinate)].values[0][0]
 				landslide_code =polig_landslide
 				if landslide_code <=3:
+					for key,value in dict_Landslide.items():
+						if key == landslide_code:
+							landslide_str=value
 					print(landslide_code)
-					st.markdown('**-Landslide Risk: **'+ str(landslide_code))
+					st.markdown('**-Landslide Risk: **'+ str(landslide_code)+' ---> '+landslide_str)
 					#st.write('wait for Flood Risk Analysis... ')
 				else:
+					###seems doesn't work!
 					landslide_code = 'Outside Risk Zone'
 					print(landslide_code)
 					st.markdown('**-Landslide Risk: **'+ str(landslide_code))
@@ -134,23 +144,16 @@ def main():
 			if p.within(i):	
 				frisk_code = flood_shp[flood_shp.geometry.intersects(coordinate)].values[0][0]
 				new_risk = frisk_code-1
-				if new_risk == 0:
-					new_risk = 'No Risk'
-					st.markdown('**-Flood risk: **' + str(new_risk))
+				if new_risk <=4:
+					for key,value in dict_Flood.items():
+						if key == new_risk:
+							flood_str=value
+					st.markdown('**-Flood risk: **' + str(new_risk)+' ---> '+flood_str)
 					print(new_risk)
 					url1 = 'tablerisk.png'
 					image1 = Image.open(url1)
-
 					#st.markdown(get_table_download_link(df), unsafe_allow_html=True)
-					st.image(image1, caption='',use_column_width=True)
-				elif new_risk <=4:
-					st.markdown('**-Flood risk: **' + str(new_risk))
-					print(new_risk)
-					url1 = 'tablerisk.png'
-					image1 = Image.open(url1)
-
-					#st.markdown(get_table_download_link(df), unsafe_allow_html=True)
-					st.image(image1, caption='',width=400)
+					st.image(image1, caption='',width=350)
 					break 
 
 	## TEST ##
