@@ -152,7 +152,7 @@ def main():
 					image1 = Image.open(url1)
 
 					#st.markdown(get_table_download_link(df), unsafe_allow_html=True)
-					st.image(image1, caption='',use_column_width=True)
+					st.image(image1, caption='',width=400)
 					break 
 
 	## TEST ##
