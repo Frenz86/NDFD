@@ -14,6 +14,7 @@ import shapefile #pip install pyshp#
 import shapely.speedups
 shapely.speedups.enable()
 
+
 ############# from shapefile to dataframe pandas #################
 def read_shapefile(shp_path):
 	"""
@@ -30,6 +31,26 @@ def read_shapefile(shp_path):
 	df = df.assign(coords=shps)
 	return df
 ##############################################################################################
+def dict2(landslide_code):
+	dict_Landslide = {0:'No-Risk',
+					1:'Low-Risk',
+					2:'Moderate-Risk'}
+	for key,value in dict_Landslide.items():
+		if key == landslide_code:
+			landslide_str=value
+			return str(landslide_str)
+
+def dict1(new_risk):
+	dict_Flood = {0:'No-Risk',
+				1:'Low-Risk',
+				2:'Moderate-Risk',
+				3:'High-Risk',
+				4:'Very High-Risk'}
+	for key,value in dict_Flood.items():
+		if key == new_risk:
+			flood_str=value
+			return str(flood_str)
+
 # Landslide Risk (Vectorised)
 landslide_shp = gpd.read_file('Flood_and_Landslide_Datasets/geonode_class3_elev.shp')
 landslide_json = 'Flood_and_Landslide_Datasets/geonode_class3_elev1.geojson'
@@ -91,8 +112,8 @@ def main():
 	# lst_dict=[]
 
 	######## Dictionary Landslide-Flood-Risk
-	dict_Landslide = {0:'Low-Risk',1:'Moderate-Risk',2:'High-Risk'}
-	dict_Flood = {0:'No-Risk',1:'Low-Risk',2:'Moderate-Risk',3:'High-Risk',4:'Very High-Risk'}
+	#dict_Landslide = {0:'No-Risk',1:'Low-Risk',2:'Moderate-Risk'}
+	#dict_Flood = {0:'No-Risk',1:'Low-Risk',2:'Moderate-Risk',3:'High-Risk',4:'Very High-Risk'}
 # Text labels to enter the lat & long coordinates once you read them on the map
 	lat_long = st.text_input('Insert Latitude,Longitude (without spaces) format WGS84-EPGS4326 (DD.dddd) for example: 15.2533,-61.3164',max_chars=16)
 	if lat_long != '': 
@@ -112,50 +133,61 @@ def main():
 			if p.within(i):
 				polig_landslide = landslide_shp[landslide_shp.geometry.intersects(coordinate)].values[0][0]
 				landslide_code =polig_landslide-1
-				if landslide_code <=2:
-					for key,value in dict_Landslide.items():
-						if key == landslide_code:
-							landslide_str=value
-					print(landslide_code)
-					st.markdown('**-Landslide Risk: **'+ str(landslide_code)+' ---> '+landslide_str)
-					#st.write('wait for Flood Risk Analysis... ')
-				else:
-					###seems doesn't work!
-					landslide_code = 'Outside Risk Zone'
-					print(landslide_code)
-					st.markdown('**-Landslide Risk: **'+ str(landslide_code))
-					new_risk = 'Outside Flood Risk Zone'
-					print(new_risk)
-					st.markdown('**-Flood risk: **' + str(new_risk))
-					url1 = 'tablerisk.png'
-					image1 = Image.open(url1)
-					st.image(image1, caption='',use_column_width=True)
-					break
-		
-		######## Second loop for flood risk
-		frisk_code = 'NAN'
-		new_risk = 'NAN'
-		for i in flood_shp.loc[:,'geometry']:
-			p = Point(longitude,latitude)
-			if p.within(i):	
+				#if landslide_code <=2:
+				print(landslide_code)
+				st.markdown('**-Landslide Risk: **'+ str(landslide_code)+' ---> '+ dict2(landslide_code))
+				
 				frisk_code = flood_shp[flood_shp.geometry.intersects(coordinate)].values[0][0]
 				new_risk = frisk_code-1
-				if new_risk <=4:
-					for key,value in dict_Flood.items():
-						if key == new_risk:
-							flood_str=value
-					st.markdown('**-Flood risk: **' + str(new_risk)+'---> '+flood_str)
-					print(new_risk)
-					url1 = 'tablerisk.png'
-					image1 = Image.open(url1)
-					#st.markdown(get_table_download_link(df), unsafe_allow_html=True)
-					st.image(image1, caption='',width=350)
-					break 
+				#if new_risk <=4:
+				st.markdown('**-Flood risk: **' + str(new_risk)+'---> '+dict1(new_risk))
+				print(new_risk)
+				url1 = 'tablerisk.png'
+				image1 = Image.open(url1)
+				#st.markdown(get_table_download_link(df), unsafe_allow_html=True)
+				st.image(image1, caption='',width=350)
+				break 
+				
+				
+				
+				
+				
+				
+					#st.write('wait for Flood Risk Analysis... '
+				# else:
+				# 	###seems doesn't work!
+				# 	landslide_code = 'Outside Risk Zone'
+				# 	print(landslide_code)
+				# 	st.markdown('**-Landslide Risk: **'+ str(landslide_code))
+				# 	new_risk = 'Outside Flood Risk Zone'
+				# 	print(new_risk)
+				# 	st.markdown('**-Flood risk: **' + str(new_risk)) 
+				# 	url1 = 'tablerisk.png'
+				# 	image1 = Image.open(url1)
+				# 	st.image(image1, caption='',use_column_width=True)
+				# 	break
+		
+		######## Second loop for flood risk
+		# frisk_code = 'NAN'
+		# new_risk = 'NAN'
+		# for i in flood_shp.loc[:,'geometry']:
+		# 	p = Point(longitude,latitude)
+		# 	if p.within(i):	
+		# 		frisk_code = flood_shp[flood_shp.geometry.intersects(coordinate)].values[0][0]
+		# 		new_risk = frisk_code-1
+		# 		#if new_risk <=4:
+		# 		st.markdown('**-Flood risk: **' + str(new_risk)+'---> '+dict1(new_risk))
+		# 		print(new_risk)
+		# 		url1 = 'tablerisk.png'
+		# 		image1 = Image.open(url1)
+		# 		#st.markdown(get_table_download_link(df), unsafe_allow_html=True)
+		# 		st.image(image1, caption='',width=350)
+		# 		break 
 
 	## TEST ##
-	## flood risk ==4 Landl ==1 #15.3393,-61.2603
-	## flood risk ==0 Landl ==2 15.5310,-61.4623
-	## flood risk ==0 Landl ==1 #15.3451,-61.3588
+	## flood risk ==4 Landl ==0 #15.3393,-61.2603
+	## flood risk ==0 Landl ==1 15.5310,-61.4623
+	## flood risk ==0 Landl ==0 #15.3451,-61.3588
 	## outside flood and risk # 15.4265,-61.2447
 if __name__ == "__main__":
 	main()
