@@ -22,7 +22,7 @@ def main():
 	#st.button("Re-run")
 	# set up layout
 	st.title("Dominica's GEO-Risk Classificator")
-	pag_name = ["Risk Classification","Coordinate conversion WGS84-32619 UTM ZONE19/WGS84-4326"]
+	pag_name = ["Risk Classification","Coordinate conversion WGS84-32619 UTM ZONE19/WGS84-EPGS4326"]
 	
 	OPTIONS = pag_name
 	#sim_selection = st.radio('Select the option', OPTIONS)

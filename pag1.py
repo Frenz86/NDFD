@@ -62,7 +62,6 @@ def main():
 		}
 	).add_to(m)
 
-
 	## Show risk zones
 	folium.GeoJson(
 	flood_gj,
