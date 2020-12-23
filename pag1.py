@@ -134,13 +134,16 @@ def main():
 	if st.button('Analyse Lat & Long'): # this is if you want to add a button to launch the analysis (without this, it does automatically when there's lat & long values in the cell)
 		st.header('Extracting Results for the location selected:\n(Lat: ' + str(latitude) +' & Long: ' + str(longitude) + ')')
 		
-		landslide_code,new_risk = risk_prediction(longitude,latitude)
-		st.markdown('**-Landslide Risk: **'+ str(landslide_code)+' ---> '+ dict2(landslide_code))
-		st.markdown('**-Flood risk: **' + str(new_risk)+'---> '+dict1(new_risk))
-		
-		url1 = 'tablerisk.png'
-		image1 = Image.open(url1)
-		st.image(image1, caption='',width=350)
+		try:
+			landslide_code,new_risk = risk_prediction(longitude,latitude)
+			st.markdown('**-Landslide Risk: **'+ str(landslide_code)+' ---> '+ dict2(landslide_code))
+			st.markdown('**-Flood risk: **' + str(new_risk)+'---> '+dict1(new_risk))
+			
+			url1 = 'tablerisk.png'
+			image1 = Image.open(url1)
+			st.image(image1, caption='',width=350)
+		except:
+			st.markdown("The coordinate insert are outside Dominica Island. Please insert correct coordinates!")
 
 	## TEST ##
 	## flood risk ==4 Landl ==0 #15.3393,-61.2603
