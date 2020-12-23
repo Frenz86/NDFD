@@ -79,8 +79,8 @@ def risk_prediction(longitude,latitude):
 		#if new_risk <=4:
 		#st.markdown('**-Flood risk: **' + str(new_risk)+'---> '+dict1(new_risk))
 		print(new_risk)
-		#st.image(image1, caption='',width=350)
 		return landslide_code,new_risk
+		#st.image(image1, caption='',width=350)
 
 def main():
 	colors = ['#2b83ba', '#abdda4', '#ffffbf', '#fdae61', '#d7191c'] # these have been assigned to each FloodRisk category in the GeoJSON file on QGIS!!!
@@ -131,7 +131,7 @@ def main():
 	if st.button('Analyse Lat & Long'): # this is if you want to add a button to launch the analysis (without this, it does automatically when there's lat & long values in the cell)
 		st.header('Extracting Results for the location selected:\n(Lat: ' + str(latitude) +' & Long: ' + str(longitude) + ')')
 		
-		risk_prediction(longitude,latitude)
+		landslide_code,new_risk = risk_prediction(longitude,latitude)
 		st.markdown('**-Landslide Risk: **'+ str(landslide_code)+' ---> '+ dict2(landslide_code))
 		st.markdown('**-Flood risk: **' + str(new_risk)+'---> '+dict1(new_risk))
 		
