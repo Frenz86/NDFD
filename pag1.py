@@ -31,6 +31,7 @@ def read_shapefile(shp_path):
 	df = df.assign(coords=shps)
 	return df
 ##############################################################################################
+@st.cache
 def dict2(landslide_code):
 	dict_Landslide = {0:'No-Risk',
 					1:'Low-Risk',
@@ -39,7 +40,7 @@ def dict2(landslide_code):
 		if key == landslide_code:
 			landslide_str=value
 			return str(landslide_str)
-
+@st.cache
 def dict1(new_risk):
 	dict_Flood = {0:'No-Risk',
 				1:'Low-Risk',
@@ -116,42 +117,21 @@ def main():
 	if st.button('Analyse Lat & Long'): # this is if you want to add a button to launch the analysis (without this, it does automatically when there's lat & long values in the cell)
 		st.header('Extracting Results for the location selected:\n(Lat: ' + str(latitude) +' & Long: ' + str(longitude) + ')')
 		coordinate = shapely.geometry.Point((longitude,latitude,))
-		# Printing a list of the coords to ensure iterable 
-		#list(coordinate.coords)
+
+		polig_landslide = landslide_shp[landslide_shp.geometry.intersects(coordinate)].values[0][0]
+		landslide_code =polig_landslide-1
+		print(landslide_code)
+		st.markdown('**-Landslide Risk: **'+ str(landslide_code)+' ---> '+ dict2(landslide_code))
 		
-		######## Loop for Landslide	and Fllod
-		landslide_code='NAN'
-		for i in landslide_shp.loc[:,'geometry']:
-			p = Point(longitude,latitude)
-			if p.within(i):
-				polig_landslide = landslide_shp[landslide_shp.geometry.intersects(coordinate)].values[0][0]
-				landslide_code =polig_landslide-1
-				#if landslide_code <=2:
-				print(landslide_code)
-				st.markdown('**-Landslide Risk: **'+ str(landslide_code)+' ---> '+ dict2(landslide_code))
-				
-				frisk_code = flood_shp[flood_shp.geometry.intersects(coordinate)].values[0][0]
-				new_risk = frisk_code-1
-				#if new_risk <=4:
-				st.markdown('**-Flood risk: **' + str(new_risk)+'---> '+dict1(new_risk))
-				print(new_risk)
-				url1 = 'tablerisk.png'
-				image1 = Image.open(url1)
-				#st.markdown(get_table_download_link(df), unsafe_allow_html=True)
-				st.image(image1, caption='',width=350)
-				break 
-				# else:
-				# 	###seems doesn't work!
-				# 	landslide_code = 'Outside Risk Zone'
-				# 	print(landslide_code)
-				# 	st.markdown('**-Landslide Risk: **'+ str(landslide_code))
-				# 	new_risk = 'Outside Flood Risk Zone'
-				# 	print(new_risk)
-				# 	st.markdown('**-Flood risk: **' + str(new_risk)) 
-				# 	url1 = 'tablerisk.png'
-				# 	image1 = Image.open(url1)
-				# 	st.image(image1, caption='',use_column_width=True)
-				# 	break
+		frisk_code = flood_shp[flood_shp.geometry.intersects(coordinate)].values[0][0]
+		new_risk = frisk_code-1
+		#if new_risk <=4:
+		st.markdown('**-Flood risk: **' + str(new_risk)+'---> '+dict1(new_risk))
+		print(new_risk)
+		url1 = 'tablerisk.png'
+		image1 = Image.open(url1)
+		#st.markdown(get_table_download_link(df), unsafe_allow_html=True)
+		st.image(image1, caption='',width=350)
 
 	## TEST ##
 	## flood risk ==4 Landl ==0 #15.3393,-61.2603

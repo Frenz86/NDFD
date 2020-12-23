@@ -1,6 +1,6 @@
 import streamlit as st
 from pag1 import main as  pag1
-from pag2 import save as  pag2
+#from pag2 import save as  pag2
 from pag3 import main as  pag3
 
 st.set_page_config(page_title='Risk-Classificator',page_icon='🌎')
@@ -32,8 +32,6 @@ def main():
 		pag1()
 	elif sim_selection == pag_name[1]:
 		pag3()
-	elif sim_selection == pag_name[2]:
-		pag2()
 	else:
 		st.markdown("Something went wrong. We are looking into it.")
 	
