@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-from pathlib import Path
+#from pathlib import Path
 import sqlite3
 from sqlite3 import Connection
 import streamlit as st
@@ -12,7 +12,7 @@ URI_SQLITE_DB = "test.db"
 def init_db(conn: Connection):
 	conn.execute(
 		"""CREATE TABLE IF NOT EXISTS test
-			(INPUT1 INT,INPUT2 INT,INPUT3 INT,INPUT4 INT);"""
+			(LATITUDE FLOAT,LONGITUDE FLOAT,RISK_LANDSLIDE INT,RISK_FLOOD INT);"""
 	)
 	conn.commit()
 
@@ -51,16 +51,15 @@ def get_table_download_link(df):
 	"""
 	val = to_excel(df)
 	b64 = base64.b64encode(val)  # val looks like b'...'
-	return f'<a href="data:application/octet-stream;base64,{b64.decode()}" download="extract.xlsx">Download xlsx file</a>' # decode b'abc' => abc
+	return f'<a href="data:application/octet-stream;base64,{b64.decode()}" download="extract.xlsx">Download results on xlsx </a>' # decode b'abc' => abc
 # df = ... # your dataframe
 # st.markdown(get_table_download_link(df), unsafe_allow_html=True)
 
 def save(x,y,k,z):
 	#### First part DB ##########
 	def build_sidebar(conn: Connection):
-		if st.button("Save to list"):
-			conn.execute(f"INSERT INTO test (INPUT1, INPUT2,INPUT3, INPUT4) VALUES ({x}, {y},{k}, {z})")
-			conn.commit()
+		conn.execute(f"INSERT INTO test (LATITUDE,LONGITUDE,RISK_LANDSLIDE,RISK_FLOOD) VALUES ({x}, {y},{k}, {z})")
+		conn.commit()
 	conn = get_connection(URI_SQLITE_DB)
 	init_db(conn)
 	#############################
@@ -68,13 +67,11 @@ def save(x,y,k,z):
 
 	################## Export to Excel SQLite
 	build_sidebar(conn)
-	display_data(conn)
+	#display_data(conn)
 	df = get_data(conn)
 	#df = pd.DataFrame(np.random.randint(0,100,size=(100, 4)), columns=list('ABCD'))
-	download = st.button("export result")
-	if download:
-		df
-		st.markdown(get_table_download_link(df), unsafe_allow_html=True)
+	#download = st.button("export results")
+	st.markdown(get_table_download_link(df), unsafe_allow_html=True)
 	
 if __name__ == "__main__":
-	save(2,4,6,8)
+	save(2.112,4,6,8)

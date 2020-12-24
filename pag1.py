@@ -45,7 +45,7 @@ flood_gj = geojson.load(open('Flood_and_Landslide_Datasets/geonode_flood_hazard_
 # columns=['latitude','longitude','Risk_Landslide','Risk_Flood']
 # #df = pd.DataFrame(index=index, columns=columns)
 #################################################################
-@st.cache
+@st.cache(suppress_st_warning=True)
 def dict2(landslide_code):
 	dict_Landslide = {0:'No-Risk',
 					1:'Low-Risk',
@@ -54,7 +54,7 @@ def dict2(landslide_code):
 		if key == landslide_code:
 			landslide_str=value
 			return str(landslide_str)
-@st.cache
+@st.cache(suppress_st_warning=True)
 def dict1(new_risk):
 	dict_Flood = {0:'No-Risk',
 				1:'Low-Risk',
@@ -66,7 +66,7 @@ def dict1(new_risk):
 			flood_str=value
 			return str(flood_str)
 ########################################################################################
-@st.cache
+@st.cache(suppress_st_warning=True)
 def risk_prediction(longitude,latitude):
 		coordinate = shapely.geometry.Point((longitude,latitude,))
 		polig_landslide = landslide_shp[landslide_shp.geometry.intersects(coordinate)].values[0][0]
@@ -183,8 +183,11 @@ def main():
 			url1 = 'tablerisk.png'
 			image1 = Image.open(url1)
 			st.image(image1, caption='',width=350)
+			from pag5 import save
+			save(latitude,longitude,landslide_code,new_risk)
 		except:
 			st.markdown("The coordinate insert are outside Dominica Island. Please insert correct coordinates!")
+	
 
 	## TEST ##
 	## flood risk ==4 Landl ==0 #15.3393,-61.2603
