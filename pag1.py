@@ -11,8 +11,11 @@ import matplotlib, matplotlib.pyplot as plt
 import branca
 #import shapefile #pip install pyshp#
 #fondamentali
+import os
 import shapely.speedups
 shapely.speedups.enable()
+from db import save
+from db import delete_all_tasks
 
 ############# from shapefile to dataframe pandas #################
 def read_shapefile(shp_path):
@@ -45,6 +48,16 @@ flood_gj = geojson.load(open('Flood_and_Landslide_Datasets/geonode_flood_hazard_
 # columns=['latitude','longitude','Risk_Landslide','Risk_Flood']
 # #df = pd.DataFrame(index=index, columns=columns)
 #################################################################
+#Delete records from table SQlite
+import sqlite3
+from sqlite3 import Connection
+@st.cache(hash_funcs={Connection: id})
+def get_connection(path: str):
+	"""Put the connection in cache to reuse if path does not change between Streamlit reruns.
+	NB : https://stackoverflow.com/questions/48218065/programmingerror-sqlite-objects-created-in-a-thread-can-only-be-used-in-that-sa
+	"""
+	return sqlite3.connect(path, check_same_thread=False)
+###############################################################
 @st.cache(suppress_st_warning=True)
 def dict2(landslide_code):
 	dict_Landslide = {0:'No-Risk',
@@ -183,10 +196,14 @@ def main():
 			url1 = 'tablerisk.png'
 			image1 = Image.open(url1)
 			st.image(image1, caption='',width=350)
-			from db import save
+			##### save DB
 			save(latitude,longitude,landslide_code,new_risk)
 		except:
 			st.markdown("The coordinate insert are outside Dominica Island. Please insert correct coordinates!")
+	if st.checkbox("Clear Database"):
+		conn = get_connection("test1.db")
+		delete_all_tasks(conn)
+		st.markdown('Result Database Cleaned')
 	
 
 	## TEST ##

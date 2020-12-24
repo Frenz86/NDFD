@@ -25,6 +25,16 @@ def get_data(conn: Connection):
 	df = pd.read_sql("SELECT * FROM test", con=conn)
 	return df
 
+def delete_all_tasks(conn: Connection):
+    """
+    Delete all rows in the tasks table
+    :param conn: Connection to the SQLite database
+    :return:
+    """
+    sql = 'DELETE FROM test'
+    cur = conn.cursor()
+    cur.execute(sql)
+    conn.commit()
 
 @st.cache(hash_funcs={Connection: id})
 def get_connection(path: str):
@@ -55,6 +65,7 @@ def get_table_download_link(df):
 	return f'<a href="data:application/octet-stream;base64,{b64.decode()}" download="extract.xlsx">Download results on xlsx </a>' # decode b'abc' => abc
 # df = ... # your dataframe
 # st.markdown(get_table_download_link(df), unsafe_allow_html=True)
+
 
 def save(x,y,k,z):
 	#### First part DB ##########
