@@ -183,7 +183,7 @@ def main():
 			url1 = 'tablerisk.png'
 			image1 = Image.open(url1)
 			st.image(image1, caption='',width=350)
-			from pag5 import save
+			from db import save
 			save(latitude,longitude,landslide_code,new_risk)
 		except:
 			st.markdown("The coordinate insert are outside Dominica Island. Please insert correct coordinates!")
