@@ -7,7 +7,7 @@ import streamlit as st
 import pandas as pd
 
 #URI_SQLITE_DB = "test.db"
-URI_SQLITE_DB = "test.db"
+URI_SQLITE_DB = "test1.db"
 
 def init_db(conn: Connection):
 	conn.execute(
