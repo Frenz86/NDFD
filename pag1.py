@@ -200,7 +200,7 @@ def main():
 			save(latitude,longitude,landslide_code,new_risk)
 		except:
 			st.markdown("The coordinate insert are outside Dominica Island. Please insert correct coordinates!")
-	if st.checkbox("Clear Database"):
+	if st.button("Clear Database"):
 		conn = get_connection("test1.db")
 		delete_all_tasks(conn)
 		st.markdown('Result Database Cleaned')
