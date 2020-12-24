@@ -35,7 +35,6 @@ def main():
 	else:
 		st.markdown("Something went wrong. We are looking into it.")
 	
-
 if __name__ == "__main__":
 	main()
 

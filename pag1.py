@@ -192,15 +192,17 @@ def main():
 			landslide_code,new_risk = risk_prediction(longitude,latitude)
 			st.markdown('**-Landslide Risk: **'+ str(landslide_code)+' ---> '+ dict2(landslide_code))
 			st.markdown('**-Flood risk: **' + str(new_risk)+'---> '+dict1(new_risk))
-			
+
+			landslide_rclass = dict2(landslide_code)
+			flood_rclass = dict1(new_risk)
 			url1 = 'tablerisk.png'
 			image1 = Image.open(url1)
 			st.image(image1, caption='',width=350)
 			##### save DB
-			save(latitude,longitude,landslide_code,new_risk)
+			save(latitude,longitude,landslide_code,new_risk,landslide_rclass,flood_rclass)
 		except:
 			st.markdown("The coordinate insert are outside Dominica Island. Please insert correct coordinates!")
-	if st.button("Clear Database"):
+	if st.button("Clear Result Database"):
 		conn = get_connection("test1.db")
 		delete_all_tasks(conn)
 		st.markdown('Result Database Cleaned')

@@ -13,7 +13,7 @@ URI_SQLITE_DB = "test1.db"
 def init_db(conn: Connection):
 	conn.execute(
 		"""CREATE TABLE IF NOT EXISTS test
-			(LATITUDE FLOAT,LONGITUDE FLOAT,RISK_LANDSLIDE INT,RISK_FLOOD INT);"""
+			(LATITUDE FLOAT,LONGITUDE FLOAT,LANDSLIDE_RISK INT,FLOOD_RISK INT,LANDSLIDE_RCLASS TEXT,FLOOD_RCLASS TEXT);"""
 	)
 	conn.commit()
 
@@ -67,15 +67,18 @@ def get_table_download_link(df):
 # st.markdown(get_table_download_link(df), unsafe_allow_html=True)
 
 
-def save(x,y,k,z):
+def save(x,y,k,z,a,b):
 	#### First part DB ##########
 	def build_sidebar(conn: Connection):
-		conn.execute(f"INSERT INTO test (LATITUDE,LONGITUDE,RISK_LANDSLIDE,RISK_FLOOD) VALUES ({x}, {y},{k}, {z})")
+		#if st.button("Save to list"):
+		item = [y,x,k,z,a,b]
+		conn.execute('insert into test values(?,?,?,?,?,?)',item)
+		#conn.execute(f"INSERT INTO test (LATITUDE,LONGITUDE,RISK_LANDSLIDE,RISK_FLOOD) VALUES ({x}, {y},{k}, {z})")
 		conn.commit()
 	conn = get_connection(URI_SQLITE_DB)
 	init_db(conn)
 	#############################
-	x,y,k,z
+
 
 	################## Export to Excel SQLite
 	build_sidebar(conn)
@@ -86,4 +89,4 @@ def save(x,y,k,z):
 	st.markdown(get_table_download_link(df), unsafe_allow_html=True)
 	
 if __name__ == "__main__":
-	save(2.112,4,6,8)
+	save(2.112,4,6,8,'ciao','ccsd')
