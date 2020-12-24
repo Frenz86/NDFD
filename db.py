@@ -5,6 +5,7 @@ import sqlite3
 from sqlite3 import Connection
 import streamlit as st
 import pandas as pd
+import xlsxwriter
 
 #URI_SQLITE_DB = "test.db"
 URI_SQLITE_DB = "test1.db"
