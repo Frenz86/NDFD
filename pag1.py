@@ -185,9 +185,15 @@ def main():
 		latitude = float(lat_long.split(',')[0])
 		longitude = float(lat_long.split(',')[1])
 
+	name = st.text_input(' Give a TAG to this point for the DB (not mandatory)',max_chars=15)
+	if name == '': 
+		name = 'None'
+	else:
+		name = str(name)
+
 	if st.button('Analyse Lat & Long'): # this is if you want to add a button to launch the analysis (without this, it does automatically when there's lat & long values in the cell)
 		st.header('Extracting Results for the location selected:\n(Lat: ' + str(latitude) +' & Long: ' + str(longitude) + ')')
-		
+	
 		try:
 			landslide_code,new_risk = risk_prediction(longitude,latitude)
 			st.markdown('**-Landslide Risk: **'+ str(landslide_code)+' ---> '+ dict2(landslide_code))
@@ -199,15 +205,15 @@ def main():
 			image1 = Image.open(url1)
 			st.image(image1, caption='',width=350)
 			##### save DB
-			save(latitude,longitude,landslide_code,new_risk,landslide_rclass,flood_rclass)
+			
+			save(latitude,longitude,landslide_code,new_risk,name,landslide_rclass,flood_rclass)
 		except:
 			st.markdown("The coordinate insert are outside Dominica Island. Please insert correct coordinates!")
 	if st.button("Clear Result Database"):
 		conn = get_connection("test1.db")
 		delete_all_tasks(conn)
-		st.markdown('Result Database Cleaned')
+		st.markdown('Result Database Cleaned!')
 	
-
 	## TEST ##
 	## flood risk ==4 Landl ==0 #15.3393,-61.2603
 	## flood risk ==0 Landl ==1 15.5310,-61.4623
