@@ -4,6 +4,17 @@ from pag1 import main as  pag1
 from pag3 import main as  pag3
 
 st.set_page_config(page_title='Risk-Classificator',page_icon='🌎')
+hide_footer_style = """
+<style>
+.reportview-container .main footer {visibility: hidden;}    
+"""
+st.markdown(hide_footer_style, unsafe_allow_html=True)
+
+def show_footer():
+	st.markdown("***")
+	st.markdown("**© 2021 Developed by Daniele Grotti **") 
+	st.markdown("**Like this tool?** Follow me on  "
+				"[Linkedin](https://www.linkedin.com/in/daniele-grotti-38681146)")
 
 
 #@st.cache(suppress_st_warning=True)
@@ -34,6 +45,8 @@ def main():
 		pag3()
 	else:
 		st.markdown("Something went wrong. We are looking into it.")
+
+	show_footer()
 	
 if __name__ == "__main__":
 	main()
