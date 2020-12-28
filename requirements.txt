@@ -1,5 +1,5 @@
 streamlit ==0.73
-numpy
+numpy ==1.18
 pandas
 streamlit-folium
 folium
