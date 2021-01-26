@@ -175,12 +175,12 @@ def show_maps_Flood():
 def main():
 	if st.button("show map with both risk Layers"):
 		show_maps_complete()
-		st.write('This map uses coordinate format WGS84-EPGS4326')
+		st.write('This map uses coordinate format WGS84-EPSG4326')
 	else:
 		show_maps_Flood()
-		st.write('This map uses coordinate format WGS84-EPGS4326')
+		st.write('This map uses coordinate format WGS84-EPSG4326')
 # Text labels to enter the lat & long coordinates once you read them on the map
-	lat_long = st.text_input('Insert Latitude,Longitude (without spaces) format WGS84-EPGS4326 (DD.dddd) for example: 15.2533,-61.3164',max_chars=16)
+	lat_long = st.text_input('Insert Latitude,Longitude (without spaces) format WGS84-EPSG4326 (DD.dddd) for example: 15.2533,-61.3164',max_chars=16)
 	if lat_long != '': 
 		latitude = float(lat_long.split(',')[0])
 		longitude = float(lat_long.split(',')[1])

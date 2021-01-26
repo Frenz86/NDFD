@@ -5,4 +5,4 @@ nativefier --name '<you .exe name>' '<your streamlit sharing website url>' --pla
 Then In your current Directory You should see <AppName>-32-x64 folder or similar if you have chosen windows run the .exe file and you have you software.
 
 
-nativefier --name Audiofy https://pdfaudio.herokuapp.com --platform windows
+nativefier --name NDFD https://ndfd.herokuapp.com --platform windows

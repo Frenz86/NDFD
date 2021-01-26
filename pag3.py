@@ -39,7 +39,7 @@ def unproject(z, l, x, y):
 
 
 def main():
-	st.title('Conversion WGS84-32619 UTM ZONE19/WGS84-EPGS4326')
+	st.title('Conversion WGS84-32619 UTM ZONE19/WGS84-EPSG4326')
 	#https://awsm-tools.com/geo/utm-to-geographic
 	#unproject(24,'N',510000,7042000)
 	## (63.50614385957355, -38.799090003171294)
@@ -60,14 +60,14 @@ def main():
 	if input4 != '': 
 		y = float(input4)    
 
-	if st.button('Conver to WGS84-EPGS4326'):
+	if st.button('Conver to WGS84-EPSG4326'):
 		st.markdown('**Latitude, Longitude**')
 		conversion = unproject(zone,letter,x,y)
 		Latitude = round(float(conversion[0]),4) #63
 		Longitude = round(float(conversion[1]),4)
 		st.header(str(Latitude)+','+str(Longitude))
 		st.write('Conversion Done!')
-		st.write('Copy and Paste WGS84-EPGS4326 coordinate to the Risk Classificator')
+		st.write('Copy and Paste WGS84-EPSG4326 coordinate to the Risk Classificator')
 
 if __name__ == "__main__":
 	main()
