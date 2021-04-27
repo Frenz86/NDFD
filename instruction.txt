@@ -1,0 +1,28 @@
+#portainer -- streamlit-docker-aws
+
+##################### Portainer ############
+sudo apt update
+sudo apt-get install apt-transport-https ca-certificates curl gnupg-agent software-properties-common
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+sudo apt-key fingerprint 0EBFCD88
+sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+sudo apt-get install docker-ce docker-ce-cli containerd.io
+sudo usermod -aG docker $USER
+sudo reboot
+sudo docker run hello-world
+
+sudo curl -L "https://github.com/docker/compose/releases/download/1.26.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+sudo chmod +x /usr/local/bin/docker-compose
+sudo ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
+docker-compose --version
+
+cd ~/
+sudo docker volume create portainer_data
+sudo docker run -d -p 8000:8000 -p 9000:9000 --name=portainer --restart=always -v /var/run/docker.sock:/var/run/docker.sock -v portainer_data:/data portainer/portainer
+
+#################### APP #################################
+
+git clone https://github.com/Frenz86/streamlit-docker-aws.git
+cd streamlit-docker-aws
+sudo docker image build -t streamlit:app .
+sudo docker run --name streamlitwebapp -it -p 8501:8501 -d streamlit:app
