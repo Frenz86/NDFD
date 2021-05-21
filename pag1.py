@@ -60,9 +60,9 @@ def get_connection(path: str):
 ###############################################################
 @st.cache(suppress_st_warning=True)
 def dict2(landslide_code):
-	dict_Landslide = {0:'No-Risk',
-					1:'Low-Risk',
-					2:'Moderate-Risk'}
+	dict_Landslide = {0:'Low-Risk',
+					1:'Moderate-Risk',
+					2:'High-Risk'}
 	for key,value in dict_Landslide.items():
 		if key == landslide_code:
 			landslide_str=value
